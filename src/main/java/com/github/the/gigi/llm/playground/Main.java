@@ -45,25 +45,37 @@ public class Main {
 
 
   public static void main(String[] args) {
-    var token = System.getenv("OPENAI_API_KEY");
-    var client = new OpenAiClientImpl(token);
 
+    // OpenAI
+
+    //var token = System.getenv("OPENAI_API_KEY");
+    //var base_url = "https://api.openai.com/";
+    //var model = "gpt-3.5-turbo"
+
+    // AnyScale
+    var token = System.getenv("ANYSCALE_API_TOKEN");
+    var base_url = "https://api.endpoints.anyscale.com/v1/";
+    var model = "meta-llama/Llama-2-70b-chat-hf";
+
+    var client = new OpenAiClientImpl(base_url, token);
+
+//    // Works with real OpenAI, not with
 //    var models = client.listModels();
 //    for (var model : models) {
 //      System.out.println(model);
 //    }
 
-    var question = "Are you better than Bard? "
+    var prompt = "Are you better than Bard? "
         + "What is the best LLM (Large language model) provider?";
 
     var messages = new ArrayList<ChatMessage>();
-    messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), question));
+    messages.add(new ChatMessage(ChatMessageRole.USER.value(), prompt));
 
     var r = ChatCompletionRequest
         .builder()
-        .model("gpt-3.5-turbo")
+        .model(model)
         .messages(messages)
-        .maxTokens(200)
+        .maxTokens(500)
         .n(1)
         .temperature(0.9)
         .build();
@@ -71,6 +83,11 @@ public class Main {
     var result = client.createChatCompletion(r);
     var answer = result.getChoices().getFirst().getMessage().getContent();
     answer = breakStringIntoLines(answer, 80);
+
+    System.out.println("---- prompt ----");
+    System.out.println(prompt);
+    System.out.println("----- response -----");
     System.out.println(answer);
+    System.out.println("------------------");
   }
 }

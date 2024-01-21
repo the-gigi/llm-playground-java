@@ -42,6 +42,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
 public class OpenAiClientImpl implements OpenAiClient {
+
   private static final String DEFAULT_BASE_URL = "https://api.openai.com/";
   private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
   private static final ObjectMapper mapper = defaultObjectMapper();
@@ -57,9 +58,9 @@ public class OpenAiClientImpl implements OpenAiClient {
   }
 
   public OpenAiClientImpl(final String base_url, final String token, final Duration timeout) {
-    ObjectMapper mapper = defaultObjectMapper();
-    OkHttpClient client = defaultClient(token, timeout);
-    Retrofit retrofit = new Retrofit.Builder()
+    var mapper = defaultObjectMapper();
+    var client = defaultClient(token, timeout);
+    var retrofit = new Retrofit.Builder()
         .baseUrl(base_url)
         .client(client)
         .addConverterFactory(JacksonConverterFactory.create(mapper))
