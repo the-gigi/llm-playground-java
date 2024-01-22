@@ -1,15 +1,11 @@
-package com.github.the.gigi.llm.playground;
+package com.github.the_gigi.open_ai_client;
 
-import static com.theokanning.openai.service.OpenAiService.defaultClient;
-import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theokanning.openai.DeleteResult;
 import com.theokanning.openai.audio.CreateTranscriptionRequest;
 import com.theokanning.openai.audio.CreateTranslationRequest;
 import com.theokanning.openai.audio.TranscriptionResult;
 import com.theokanning.openai.audio.TranslationResult;
-import com.theokanning.openai.client.OpenAiApi;
 import com.theokanning.openai.completion.CompletionChunk;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.CompletionResult;
@@ -33,42 +29,15 @@ import com.theokanning.openai.moderation.ModerationRequest;
 import com.theokanning.openai.moderation.ModerationResult;
 import com.theokanning.openai.service.OpenAiService;
 import io.reactivex.Flowable;
-import java.time.Duration;
 import java.util.List;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
 public class OpenAiClientImpl implements OpenAiClient {
 
-  private static final String DEFAULT_BASE_URL = "https://api.openai.com/";
-  private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
-  private static final ObjectMapper mapper = defaultObjectMapper();
-
   private final OpenAiService service;
 
-  public OpenAiClientImpl(final String token) {
-    this(DEFAULT_BASE_URL, token, DEFAULT_TIMEOUT);
-  }
-
-  public OpenAiClientImpl(final String base_url, final String token) {
-    this(base_url, token, DEFAULT_TIMEOUT);
-  }
-
-  public OpenAiClientImpl(final String base_url, final String token, final Duration timeout) {
-    var mapper = defaultObjectMapper();
-    var client = defaultClient(token, timeout);
-    var retrofit = new Retrofit.Builder()
-        .baseUrl(base_url)
-        .client(client)
-        .addConverterFactory(JacksonConverterFactory.create(mapper))
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .build();
-
-    var api = retrofit.create(OpenAiApi.class);
-    this.service = new OpenAiService(api);
+  public OpenAiClientImpl(OpenAiService service) {
+    this.service = service;
   }
 
   @Override

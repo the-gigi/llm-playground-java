@@ -1,5 +1,7 @@
-package com.github.the.gigi.llm.playground;
+package com.github.the_gigi.llm_playground;
 
+import com.github.the_gigi.open_ai_client.OpenAiClientBuilder;
+import com.github.the_gigi.open_ai_client.OpenAiClientImpl;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -57,7 +59,9 @@ public class Main {
     var base_url = "https://api.endpoints.anyscale.com/v1/";
     var model = "meta-llama/Llama-2-70b-chat-hf";
 
-    var client = new OpenAiClientImpl(base_url, token);
+    var client = new OpenAiClientBuilder(token)
+        .baseUrl(base_url)
+        .build();
 
 //    // Works with real OpenAI, not with
 //    var models = client.listModels();
@@ -75,7 +79,7 @@ public class Main {
         .builder()
         .model(model)
         .messages(messages)
-        .maxTokens(500)
+        .maxTokens(100)
         .n(1)
         .temperature(0.9)
         .build();

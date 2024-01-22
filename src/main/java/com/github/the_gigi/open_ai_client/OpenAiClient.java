@@ -1,4 +1,4 @@
-package com.github.the.gigi.llm.playground;
+package com.github.the_gigi.open_ai_client;
 
 
 import com.theokanning.openai.DeleteResult;
