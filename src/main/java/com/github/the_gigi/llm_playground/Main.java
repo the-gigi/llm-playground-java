@@ -5,7 +5,9 @@ import com.github.the_gigi.open_ai_client.OpenAiClientImpl;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
+import com.theokanning.openai.model.Model;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -56,18 +58,25 @@ public class Main {
 
     // AnyScale
     var token = System.getenv("ANYSCALE_API_TOKEN");
-    var base_url = "https://api.endpoints.anyscale.com/v1/";
+    var base_url = "https://api.endpoints.anyscale.com/";
     var model = "meta-llama/Llama-2-70b-chat-hf";
 
     var client = new OpenAiClientBuilder(token)
         .baseUrl(base_url)
         .build();
+    
+    var models = client.listModels().stream()
+        .map(Model::getId)
+        .collect(Collectors.toSet());
 
-//    // Works with real OpenAI, not with
-//    var models = client.listModels();
-//    for (var model : models) {
-//      System.out.println(model);
-//    }
+    if (!models.contains(model)) {
+      throw new RuntimeException("Model not found: " + model);
+    }
+
+    System.out.println("---- available models ----");
+    for (var m : models) {
+      System.out.println(m);
+    }
 
     var prompt = "Are you better than Bard? "
         + "What is the best LLM (Large language model) provider?";
