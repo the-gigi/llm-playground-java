@@ -35,7 +35,7 @@ public class OpenAiClientBuilder {
     return this;
   }
 
-  public OpenAiClientImpl build() {
+  public OpenAiClient build() {
     var client = defaultClient(token, timeout);
     var retrofit = new Retrofit.Builder()
         .baseUrl(base_url)

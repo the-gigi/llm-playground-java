@@ -64,7 +64,7 @@ public class Main {
     var client = new OpenAiClientBuilder(token)
         .baseUrl(base_url)
         .build();
-    
+
     var models = client.listModels().stream()
         .map(Model::getId)
         .collect(Collectors.toSet());
