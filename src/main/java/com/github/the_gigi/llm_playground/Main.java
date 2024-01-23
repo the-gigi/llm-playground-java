@@ -1,7 +1,9 @@
 package com.github.the_gigi.llm_playground;
 
+import static com.github.the_gigi.llm_playground.TextUtil.breakStringIntoLines;
+
+import com.github.the_gigi.open_ai_client.OpenAiClient;
 import com.github.the_gigi.open_ai_client.OpenAiClientBuilder;
-import com.github.the_gigi.open_ai_client.OpenAiClientImpl;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -11,73 +13,47 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-  public static String breakStringIntoLines(String input, int maxLineLength) {
-    StringBuilder result = new StringBuilder();
-    String[] paragraphs = input.split("\n");
-
-    for (String paragraph : paragraphs) {
-      String[] words = paragraph.split(" ");
-      var line = new StringBuilder();
-
-      for (String word : words) {
-        // Check if adding the next word exceeds the max line length
-        if (line.length() + word.length() + 1 > maxLineLength) {
-          // Add the current line to the result and start a new line
-          result.append(line).append("\n");
-          line = new StringBuilder();
-        }
-
-        if (!line.isEmpty()) {
-          line.append(" ");
-        }
-        line.append(word);
-      }
-
-      // Add the last line of the paragraph
-      if (!line.isEmpty()) {
-        result.append(line);
-      }
-
-      // Add a newline character after each paragraph except the last one
-      if (!paragraph.equals(paragraphs[paragraphs.length - 1])) {
-        result.append("\n");
-      }
-    }
-
-    return result.toString();
-  }
-
-
   public static void main(String[] args) {
 
     // OpenAI
+    var openAiClient = createRealOpenAiClient();
+    var anyscaleClient = createAnyscaleClient();
 
-    //var token = System.getenv("OPENAI_API_KEY");
-    //var base_url = "https://api.openai.com/";
-    //var model = "gpt-3.5-turbo"
+    // Simple interaction with OpenAI
+    System.out.println("Simple interaction with OpenAI");
+    System.out.println("------------------------------");
+    simpleInteraction(openAiClient, "gpt-3.5-turbo");
 
-    // AnyScale
+    // Simple interaction with AnyScale
+    System.out.println("Simple interaction with AnyScale");
+    System.out.println("--------------------------------");
+    simpleInteraction(anyscaleClient, "meta-llama/Llama-2-70b-chat-hf");
+
+    // Chat
+    System.out.println("Interactive Chat with OpenAI");
+    System.out.println("--------------------------------");
+    var chat = new Chat(openAiClient);
+    chat.start();
+  }
+
+  static private OpenAiClient createRealOpenAiClient() {
+    var token = System.getenv("OPENAI_API_KEY");
+    var base_url = "https://api.openai.com/";
+    return new OpenAiClientBuilder(token)
+        .baseUrl(base_url)
+        .defaultModel("gpt-3.5-turbo")
+        .build();
+  }
+
+  static private OpenAiClient createAnyscaleClient() {
     var token = System.getenv("ANYSCALE_API_TOKEN");
     var base_url = "https://api.endpoints.anyscale.com/";
-    var model = "meta-llama/Llama-2-70b-chat-hf";
-
-    var client = new OpenAiClientBuilder(token)
+    return new OpenAiClientBuilder(token)
         .baseUrl(base_url)
+        .defaultModel("meta-llama/Llama-2-70b-chat-hf")
         .build();
-
-    var models = client.listModels().stream()
-        .map(Model::getId)
-        .collect(Collectors.toSet());
-
-    if (!models.contains(model)) {
-      throw new RuntimeException("Model not found: " + model);
-    }
-
-    System.out.println("---- available models ----");
-    for (var m : models) {
-      System.out.println(m);
-    }
-
+  }
+  static private void simpleInteraction(OpenAiClient client, String model) {
     var prompt = "Are you better than Bard? "
         + "What is the best LLM (Large language model) provider?";
 
@@ -94,10 +70,10 @@ public class Main {
         .build();
 
     var result = client.createChatCompletion(r);
-    var answer = result.getChoices().getFirst().getMessage().getContent();
+    var choices = result.getChoices();
+    var answer = choices.getFirst().getMessage().getContent();
     answer = breakStringIntoLines(answer, 80);
 
-    System.out.println("---- prompt ----");
     System.out.println(prompt);
     System.out.println("----- response -----");
     System.out.println(answer);

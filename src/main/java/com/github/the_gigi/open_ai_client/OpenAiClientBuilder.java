@@ -20,6 +20,7 @@ public class OpenAiClientBuilder {
   private String base_url = DEFAULT_BASE_URL;
   private final String token;
   private Duration timeout = DEFAULT_TIMEOUT;
+  private String defaultModel;
 
   public OpenAiClientBuilder(String token) {
     this.token = token;
@@ -35,6 +36,12 @@ public class OpenAiClientBuilder {
     return this;
   }
 
+  public OpenAiClientBuilder defaultModel(String model) {
+    this.defaultModel = model;
+    return this;
+  }
+
+
   public OpenAiClient build() {
     var client = defaultClient(token, timeout);
     var retrofit = new Retrofit.Builder()
@@ -46,6 +53,6 @@ public class OpenAiClientBuilder {
 
     var api = retrofit.create(OpenAiApi.class);
     var service = new OpenAiService(api);
-    return new OpenAiClientImpl(service);
+    return new OpenAiClientImpl(service, this.defaultModel);
   }
 }

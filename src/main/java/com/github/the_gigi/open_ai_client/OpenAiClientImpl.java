@@ -35,8 +35,9 @@ import java.util.List;
 public class OpenAiClientImpl implements OpenAiClient {
 
   private final OpenAiService service;
+  private final String defaultModel = "";
 
-  public OpenAiClientImpl(OpenAiService service) {
+  public OpenAiClientImpl(OpenAiService service, String defaultModel) {
     this.service = service;
   }
 
@@ -52,6 +53,9 @@ public class OpenAiClientImpl implements OpenAiClient {
 
   @Override
   public CompletionResult createCompletion(CompletionRequest request) {
+    if (request.getModel() == null) {
+      request.setModel(this.defaultModel);
+    }
     return this.service.createCompletion(request);
   }
 
@@ -62,6 +66,9 @@ public class OpenAiClientImpl implements OpenAiClient {
 
   @Override
   public ChatCompletionResult createChatCompletion(ChatCompletionRequest request) {
+    if (request.getModel() == null) {
+      request.setModel(this.defaultModel);
+    }
     return this.service.createChatCompletion(request);
   }
 
