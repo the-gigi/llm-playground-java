@@ -26,9 +26,11 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.github.the_gigi.llm_playground.MainClass")
+    mainClass.set("com.github.the_gigi.llm_playground.Main")
 }
+
 
 tasks.test {
     useJUnitPlatform()
 }
+

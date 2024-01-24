@@ -12,7 +12,11 @@ with any OpenAI-compatible LLM provider.
 ## Usage
 See the [Main](src/main/java/com/github/the/gigi/llm/playground/Main.java) class for an example of how to use the wrapper.
 
-It does a simple chat completion against the [OpenAI]() API as well as the [Anyscale](https://anyscale.io) API.
+It does a couple of simple interactions against the [OpenAI]() API as well as the [Anyscale](https://anyscale.io) API.
+It then goes into an interactive chat session in the terminal (poor man's ChatGPT).
+
+
+Don't run using `./gradlew run` 
 
 ## Other LLM Providers
 
