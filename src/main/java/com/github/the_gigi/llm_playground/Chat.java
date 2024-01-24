@@ -42,7 +42,6 @@ public class Chat {
     for (int i = 0; i < models.size(); i++) {
       var model = models.get(i);
       System.out.println("[" + (i + 1) + "] " + model.getId());
-      System.out.println("  " + model.getId());
     }
     System.out.println("-----------------");
     // Ask user to select a model
