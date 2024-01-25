@@ -28,6 +28,8 @@ public class Main {
 
   private static final String DEFAULT_ANYSCALE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 
+  private static final String DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
+
   public static class CompanyInfoRequest {
 
     @JsonPropertyDescription("Name of company, for example: 'Microsoft' or 'Netflix")
@@ -133,8 +135,8 @@ public class Main {
     var anyscaleClient = createAnyscaleClient();
     var debugClient = createDebugClient();
 
-    //var openAiKotlinClient = createOpenAiKotlinClient(OPEN_AI_BASE_URL, System.getenv("OPENAI_API_KEY"));
-    var openAiKotlinClient = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
+    var openAiKotlinClient = createOpenAiKotlinClient(OPEN_AI_BASE_URL, System.getenv("OPENAI_API_KEY"));
+    //var openAiKotlinClient = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
     //var openAiKotlinClient = createOpenAiKotlinClient("http://localhost:5000", "dummy"); // debug against local server
 
 //    // Simple interaction with OpenAI
@@ -156,7 +158,7 @@ public class Main {
     //chat(debugClient);
 
     // Kotlin Chat
-    var chat = new OpenAiKotlinChat(openAiKotlinClient, DEFAULT_ANYSCALE_MODEL, getToolsData());
+    var chat = new OpenAiKotlinChat(openAiKotlinClient, DEFAULT_OPENAI_MODEL, getToolsData());
     chat.start();
   }
 }

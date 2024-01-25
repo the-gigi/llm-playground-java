@@ -48,17 +48,22 @@ internal fun getCompletionResponse(client: OpenAI, messages: List<String>, model
     return runBlocking {
         var message : ChatMessage
         while (true) {
-            val completion: ChatCompletion = client.chatCompletion(chatCompletionRequest)
-            message = completion.choices[0].message
-            if (message.toolCalls?.isEmpty() == true) {
-                break
-            }
-            // call function
-            for (toolCall in message.toolCalls.orEmpty()) {
-                require(toolCall is ToolCall.Function) { "Tool call is not a function" }
-                val result = toolCall.execute()
-                message = ChatMessage(ChatRole.System, result)
-                chatMessages.add(message)
+            try {
+                val completion: ChatCompletion = client.chatCompletion(chatCompletionRequest)
+                message = completion.choices[0].message
+                if (message.toolCalls == null  || message.toolCalls!!.isEmpty()) {
+                    break
+                }
+                // call function
+                for (toolCall in message.toolCalls.orEmpty()) {
+                    require(toolCall is ToolCall.Function) { "Tool call is not a function" }
+                    val result = toolCall.execute()
+                    message = ChatMessage(ChatRole.System, result)
+                    chatMessages.add(message)
+                }
+
+            } catch (e: Exception) {
+                throw e
             }
         }
         message
