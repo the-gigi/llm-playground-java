@@ -9,18 +9,20 @@ import com.aallam.openai.client.OpenAI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class OpenAiKotlinChat {
-  private final OpenAI client;
+  private final List<OpenAI> clients;
+
   private final Scanner scanner;
 
   private final String model;
 
   private final List<FunctionToolCallData> tools;
 
-  public OpenAiKotlinChat(OpenAI client, String model, List<FunctionToolCallData> tools) {
+  public OpenAiKotlinChat(List<OpenAI> clients, String model, List<FunctionToolCallData> tools) {
     this.scanner = new Scanner(System.in);
-    this.client = client;
+    this.clients = clients;
 
     this.model = model;
     this.tools = tools;
@@ -58,8 +60,12 @@ public class OpenAiKotlinChat {
 //  }
 
   private String complete(List<String> messages) {
-    var message = getCompletionResponse(this.client, messages, this.model, this.tools);
-    return message.getContent();
+    List<ChatMessage> results = this.clients.stream()
+        .map(c -> getCompletionResponse(c, messages, this.model, this.tools))
+        .toList();
+
+    // Return the first result
+    return results.get(0).getContent();
   }
 
   public void start() {

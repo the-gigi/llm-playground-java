@@ -63,7 +63,8 @@ internal fun getCompletionResponse(client: OpenAI, messages: List<String>, model
                 }
 
             } catch (e: Exception) {
-                throw e
+                message = ChatMessage(ChatRole.System, "Error: ${e.message}")
+                break
             }
         }
         message

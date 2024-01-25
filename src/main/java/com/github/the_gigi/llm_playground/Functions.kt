@@ -1,6 +1,8 @@
 package com.github.the_gigi.llm_playground
 
 import com.aallam.openai.api.chat.ToolCall
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -19,7 +21,17 @@ private fun getCompanyInfo(args: JsonObject): String {
     val companyName = args.getValue("companyName").jsonPrimitive.content
     val r = Main.CompanyInfoRequest();
     r.name = companyName;
-    return Main.getCompanyInfo(Main.CompanyInfoRequest()).toString();
+    val companyInfo = Main.getCompanyInfo(r)
+
+    // generate json for company info
+    //val employees = Map<String, List<String>>.of()
+    val employees: Map<String, List<String>> = companyInfo.employees.associate { employee ->
+        employee.name to employee.previousCompanies
+    }
+
+    val json = Json.encodeToString(employees)
+
+    return json;
 }
 
 internal fun getToolsData(): List<FunctionToolCallData> {

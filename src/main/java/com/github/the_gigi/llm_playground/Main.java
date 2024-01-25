@@ -2,29 +2,26 @@ package com.github.the_gigi.llm_playground;
 
 import static com.github.the_gigi.llm_playground.FunctionsKt.getToolsData;
 import static com.github.the_gigi.llm_playground.OpenAiClientHelperKt.createOpenAiKotlinClient;
-import static com.github.the_gigi.llm_playground.TextUtil.breakStringIntoLines;
 
 
+import com.aallam.openai.client.OpenAI;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.github.the_gigi.open_ai_client.OpenAiClient;
 import com.github.the_gigi.open_ai_client.OpenAiClientBuilder;
-import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatFunction;
-import com.theokanning.openai.completion.chat.ChatMessage;
-import com.theokanning.openai.completion.chat.ChatMessageRole;
 
 import java.util.ArrayList;
 import java.util.List;
 import kotlinx.serialization.Serializable;
-import kotlinx.serialization.json.JsonElement;
-import org.jetbrains.annotations.NotNull;
 
 public class Main {
 
 
   private static final String OPEN_AI_BASE_URL = "https://api.openai.com/v1/";
   private static final String ANYSCALE_BASE_URL = "https://api.endpoints.anyscale.com/v1/";
+
+  private static final String LOCAL_BASE_URL = "http://localhost:5000";
 
   private static final String DEFAULT_ANYSCALE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 
@@ -79,44 +76,30 @@ public class Main {
         .build();
   }
 
-  static private OpenAiClient createDebugClient() {
+  static private OpenAiClient createLocalClient() {
     var token = "dummy";
-    var base_url = "http://localhost:5000";
     return new OpenAiClientBuilder(token)
-        .baseUrl(base_url)
-        .defaultModel("mistralai/Mixtral-8x7B-Instruct-v0.1")
+        .baseUrl(LOCAL_BASE_URL)
         .build();
   }
 
-  static private void simpleInteraction(@NotNull OpenAiClient client, String model) {
-    var prompt = "Are you better than Bard? "
-        + "What is the best LLM (Large language model) provider?";
 
-    var messages = new ArrayList<ChatMessage>();
-    messages.add(new ChatMessage(ChatMessageRole.USER.value(), prompt));
+  static private void javajChat(String provider) {
+    OpenAiClient client = null;
+    switch (provider) {
+      case "openai":
+        client = createRealOpenAiClient();
+        break;
+      case "anyscale":
+        client = createAnyscaleClient();
+        break;
+      case "local":
+        client = createLocalClient();
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown provider: " + provider);
+    }
 
-    var r = ChatCompletionRequest
-        .builder()
-        .model(model)
-        .messages(messages)
-        .maxTokens(100)
-        .n(1)
-        .temperature(0.9)
-        .build();
-
-    var result = client.createChatCompletion(r);
-    var choices = result.getChoices();
-    var answer = choices.get(0).getMessage().getContent();
-    answer = breakStringIntoLines(answer, 80);
-
-    System.out.println(prompt);
-    System.out.println("----- response -----");
-    System.out.println(answer);
-    System.out.println("------------------");
-  }
-
-
-  static private void chat(OpenAiClient client) {
     var function = ChatFunction.builder()
         .name("get_work_history")
         .description("Get work history of all employees of a company")
@@ -127,38 +110,40 @@ public class Main {
     chat.start();
   }
 
+  static private void kotlinChat(String provider) {
+    var toolsData = getToolsData();
+    var model = "";
+    var clients = new ArrayList<OpenAI>();
+    OpenAI client = null;
+    switch (provider) {
+      case "openai":
+        client = createOpenAiKotlinClient(OPEN_AI_BASE_URL, System.getenv("OPENAI_API_KEY"));
+        model = DEFAULT_OPENAI_MODEL;
+        break;
+      case "anyscale":
+        client = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
+        model = DEFAULT_ANYSCALE_MODEL;
+        break;
+      case "local":
+        client = createOpenAiKotlinClient(LOCAL_BASE_URL, "dummy");
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown provider: " + provider);
+    }
+    clients.add(client);
+    // add the local client for testing
+    clients.add(createOpenAiKotlinClient(LOCAL_BASE_URL, "dummy"));
+    var chat = new OpenAiKotlinChat(clients, model, toolsData);
+    chat.start();
+  }
 
   public static void main(String[] args) {
+    //javaChat("openai");
+    //javaChat("anyscale");
+    //javaChat("local");
 
-    // OpenAI
-    var openAiClient = createRealOpenAiClient();
-    var anyscaleClient = createAnyscaleClient();
-    var debugClient = createDebugClient();
-
-    var openAiKotlinClient = createOpenAiKotlinClient(OPEN_AI_BASE_URL, System.getenv("OPENAI_API_KEY"));
-    //var openAiKotlinClient = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
-    //var openAiKotlinClient = createOpenAiKotlinClient("http://localhost:5000", "dummy"); // debug against local server
-
-//    // Simple interaction with OpenAI
-//    System.out.println("Simple interaction with OpenAI");
-//    System.out.println("------------------------------");
-//    simpleInteraction(openAiClient, "gpt-3.5-turbo");
-//
-//    // Simple interaction with AnyScale
-//    System.out.println("Simple interaction with AnyScale");
-//    System.out.println("--------------------------------");
-//    simpleInteraction(anyscaleClient, "meta-llama/Llama-2-70b-chat-hf");
-//
-    // Chat
-    System.out.println("Interactive Chat with functions");
-    System.out.println("--------------------------------");
-
-    //chat(openAiClient);
-    //chat(anyscaleClient);
-    //chat(debugClient);
-
-    // Kotlin Chat
-    var chat = new OpenAiKotlinChat(openAiKotlinClient, DEFAULT_OPENAI_MODEL, getToolsData());
-    chat.start();
+    //kotlinChat("openai");
+    kotlinChat("anyscale");
+    //kotlinChat("local");
   }
 }
