@@ -4,10 +4,7 @@ import static com.github.the_gigi.llm_playground.FunctionsKt.getToolsData;
 import static com.github.the_gigi.llm_playground.OpenAiClientHelperKt.createOpenAiKotlinClient;
 import static com.github.the_gigi.llm_playground.TextUtil.breakStringIntoLines;
 
-import com.aallam.openai.api.chat.FunctionTool;
-import com.aallam.openai.api.chat.Tool;
-import com.aallam.openai.api.chat.ToolType;
-import com.aallam.openai.api.core.Parameters;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.github.the_gigi.open_ai_client.OpenAiClient;
@@ -19,6 +16,7 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 
 import java.util.ArrayList;
 import java.util.List;
+import kotlinx.serialization.Serializable;
 import kotlinx.serialization.json.JsonElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +40,7 @@ public class Main {
 
   }
 
+  @Serializable
   public record CompanyInfoResponse(String name, List<EmployeeInfo> employees) {
 
     ;
@@ -135,8 +134,8 @@ public class Main {
     var debugClient = createDebugClient();
 
     //var openAiKotlinClient = createOpenAiKotlinClient(OPEN_AI_BASE_URL, System.getenv("OPENAI_API_KEY"));
-    //var openAiKotlinClient = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
-    var openAiKotlinClient = createOpenAiKotlinClient("http://localhost:5000", "dummy");
+    var openAiKotlinClient = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
+    //var openAiKotlinClient = createOpenAiKotlinClient("http://localhost:5000", "dummy"); // debug against local server
 
 //    // Simple interaction with OpenAI
 //    System.out.println("Simple interaction with OpenAI");

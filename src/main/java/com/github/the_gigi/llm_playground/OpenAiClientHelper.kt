@@ -50,7 +50,7 @@ internal fun getCompletionResponse(client: OpenAI, messages: List<String>, model
         while (true) {
             val completion: ChatCompletion = client.chatCompletion(chatCompletionRequest)
             message = completion.choices[0].message
-            if (message.role != ChatRole.Function) {
+            if (message.toolCalls?.isEmpty() == true) {
                 break
             }
             // call function

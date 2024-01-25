@@ -58,13 +58,8 @@ public class OpenAiKotlinChat {
 //  }
 
   private String complete(List<String> messages) {
-
-      while (true) {
-        var message = getCompletionResponse(this.client, messages, this.model, this.tools);
-        if (message.getToolCalls() == null  || message.getToolCalls().isEmpty()) {
-          return message.getContent();
-        }
-      }
+    var message = getCompletionResponse(this.client, messages, this.model, this.tools);
+    return message.getContent();
   }
 
   public void start() {
