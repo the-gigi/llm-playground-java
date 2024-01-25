@@ -1,7 +1,13 @@
 package com.github.the_gigi.llm_playground;
 
+import static com.github.the_gigi.llm_playground.FunctionsKt.getToolsData;
+import static com.github.the_gigi.llm_playground.OpenAiClientHelperKt.createOpenAiKotlinClient;
 import static com.github.the_gigi.llm_playground.TextUtil.breakStringIntoLines;
 
+import com.aallam.openai.api.chat.FunctionTool;
+import com.aallam.openai.api.chat.Tool;
+import com.aallam.openai.api.chat.ToolType;
+import com.aallam.openai.api.core.Parameters;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.github.the_gigi.open_ai_client.OpenAiClient;
@@ -10,10 +16,19 @@ import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatFunction;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
+
 import java.util.ArrayList;
 import java.util.List;
+import kotlinx.serialization.json.JsonElement;
+import org.jetbrains.annotations.NotNull;
 
 public class Main {
+
+
+  private static final String OPEN_AI_BASE_URL = "https://api.openai.com/v1/";
+  private static final String ANYSCALE_BASE_URL = "https://api.endpoints.anyscale.com/v1/";
+
+  private static final String DEFAULT_ANYSCALE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 
   public static class CompanyInfoRequest {
 
@@ -43,29 +58,6 @@ public class Main {
     return new CompanyInfoResponse(request.name, employees);
   }
 
-  public static void main(String[] args) {
-
-    // OpenAI
-    var openAiClient = createRealOpenAiClient();
-    var anyscaleClient = createAnyscaleClient();
-
-//    // Simple interaction with OpenAI
-//    System.out.println("Simple interaction with OpenAI");
-//    System.out.println("------------------------------");
-//    simpleInteraction(openAiClient, "gpt-3.5-turbo");
-//
-//    // Simple interaction with AnyScale
-//    System.out.println("Simple interaction with AnyScale");
-//    System.out.println("--------------------------------");
-//    simpleInteraction(anyscaleClient, "meta-llama/Llama-2-70b-chat-hf");
-//
-    // Chat
-    System.out.println("Interactive Chat with functions");
-    System.out.println("--------------------------------");
-
-    //chat(openAiClient);
-    chat(anyscaleClient);
-  }
 
   static private OpenAiClient createRealOpenAiClient() {
     var token = System.getenv("OPENAI_API_KEY");
@@ -81,11 +73,21 @@ public class Main {
     var base_url = "https://api.endpoints.anyscale.com/";
     return new OpenAiClientBuilder(token)
         .baseUrl(base_url)
-        .defaultModel("meta-llama/Llama-2-70b-chat-hf")
+        //.defaultModel("meta-llama/Llama-2-70b-chat-hf")
+        .defaultModel("mistralai/Mixtral-8x7B-Instruct-v0.1")
         .build();
   }
 
-  static private void simpleInteraction(OpenAiClient client, String model) {
+  static private OpenAiClient createDebugClient() {
+    var token = "dummy";
+    var base_url = "http://localhost:5000";
+    return new OpenAiClientBuilder(token)
+        .baseUrl(base_url)
+        .defaultModel("mistralai/Mixtral-8x7B-Instruct-v0.1")
+        .build();
+  }
+
+  static private void simpleInteraction(@NotNull OpenAiClient client, String model) {
     var prompt = "Are you better than Bard? "
         + "What is the best LLM (Large language model) provider?";
 
@@ -120,7 +122,42 @@ public class Main {
         .executor(CompanyInfoRequest.class, Main::getCompanyInfo)
         .build();
 
-    var chat = new Chat(client, List.of(function));
+    var chat = new OpenAiChat(client, List.of(function));
+    chat.start();
+  }
+
+
+  public static void main(String[] args) {
+
+    // OpenAI
+    var openAiClient = createRealOpenAiClient();
+    var anyscaleClient = createAnyscaleClient();
+    var debugClient = createDebugClient();
+
+    //var openAiKotlinClient = createOpenAiKotlinClient(OPEN_AI_BASE_URL, System.getenv("OPENAI_API_KEY"));
+    //var openAiKotlinClient = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
+    var openAiKotlinClient = createOpenAiKotlinClient("http://localhost:5000", "dummy");
+
+//    // Simple interaction with OpenAI
+//    System.out.println("Simple interaction with OpenAI");
+//    System.out.println("------------------------------");
+//    simpleInteraction(openAiClient, "gpt-3.5-turbo");
+//
+//    // Simple interaction with AnyScale
+//    System.out.println("Simple interaction with AnyScale");
+//    System.out.println("--------------------------------");
+//    simpleInteraction(anyscaleClient, "meta-llama/Llama-2-70b-chat-hf");
+//
+    // Chat
+    System.out.println("Interactive Chat with functions");
+    System.out.println("--------------------------------");
+
+    //chat(openAiClient);
+    //chat(anyscaleClient);
+    //chat(debugClient);
+
+    // Kotlin Chat
+    var chat = new OpenAiKotlinChat(openAiKotlinClient, DEFAULT_ANYSCALE_MODEL, getToolsData());
     chat.start();
   }
 }

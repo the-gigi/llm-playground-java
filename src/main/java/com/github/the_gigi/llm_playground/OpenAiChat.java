@@ -3,10 +3,8 @@ package com.github.the_gigi.llm_playground;
 import static com.github.the_gigi.llm_playground.TextUtil.breakStringIntoLines;
 
 import com.github.the_gigi.open_ai_client.OpenAiClient;
-import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest.ChatCompletionRequestFunctionCall;
-import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatFunction;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
@@ -15,19 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Chat {
+public class OpenAiChat {
   private final OpenAiClient client;
   private final Scanner scanner;
   private final List<ChatFunction> functions;
   private final String model;
 
-  public Chat(OpenAiClient client, List<ChatFunction> functions) {
+  public OpenAiChat(OpenAiClient client, List<ChatFunction> functions) {
     this.scanner = new Scanner(System.in);
     this.client = client;
-    this.model = chooseModel();
+
+    var defaultModel = client.getDefaultModel();
+    this.model = defaultModel.isEmpty() ? chooseModel() : defaultModel;
     this.functions = functions;
   }
-
 
   private String getUserInput() {
     return this.scanner.nextLine();

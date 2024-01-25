@@ -35,10 +35,16 @@ import java.util.List;
 public class OpenAiClientImpl implements OpenAiClient {
 
   private final OpenAiService service;
-  private final String defaultModel = "";
+  private final String defaultModel;
 
   public OpenAiClientImpl(OpenAiService service, String defaultModel) {
     this.service = service;
+    this.defaultModel = defaultModel;
+  }
+
+  @Override
+  public String getDefaultModel() {
+    return this.defaultModel;
   }
 
   @Override
