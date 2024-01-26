@@ -1,25 +1,22 @@
 package com.github.the_gigi.llm_playground;
 
+import static com.github.the_gigi.llm_playground.Functions.getFunctionsData;
 import static com.github.the_gigi.llm_playground.FunctionsKt.getToolsData;
 import static com.github.the_gigi.llm_playground.OpenAiClientHelperKt.createOpenAiKotlinClient;
 
 
 import com.aallam.openai.client.OpenAI;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.github.the_gigi.open_ai_client.OpenAiClient;
 import com.github.the_gigi.open_ai_client.OpenAiClientBuilder;
 import com.theokanning.openai.completion.chat.ChatFunction;
-
 import java.util.ArrayList;
 import java.util.List;
-import kotlinx.serialization.Serializable;
 
 public class Main {
 
 
-  private static final String OPEN_AI_BASE_URL = "https://api.openai.com/v1/";
-  private static final String ANYSCALE_BASE_URL = "https://api.endpoints.anyscale.com/v1/";
+  private static final String OPEN_AI_BASE_URL = "https://api.openai.com/";
+  private static final String ANYSCALE_BASE_URL = "https://api.endpoints.anyscale.com";
 
   private static final String LOCAL_BASE_URL = "http://localhost:5000";
 
@@ -27,64 +24,28 @@ public class Main {
 
   private static final String DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
 
-  public static class CompanyInfoRequest {
-
-    @JsonPropertyDescription("Name of company, for example: 'Microsoft' or 'Netflix")
-    @JsonProperty(required = true)
-    public String name;
-  }
-
-
-  public record EmployeeInfo(String name, List<String> previousCompanies) {
-
-  }
-
-  @Serializable
-  public record CompanyInfoResponse(String name, List<EmployeeInfo> employees) {
-
-    ;
-
-  }
-
-  public static CompanyInfoResponse getCompanyInfo(CompanyInfoRequest request) {
-    var employees = List.of(
-        new EmployeeInfo("John", List.of("SpaceX", "PayPal")),
-        new EmployeeInfo("Jack", List.of("Microsoft", "SpaceX", "Netflix")),
-        new EmployeeInfo("Jill", List.of("Netflix", "Amazon")),
-        new EmployeeInfo("Jane", List.of("Google"))
-    );
-    return new CompanyInfoResponse(request.name, employees);
-  }
-
 
   static private OpenAiClient createRealOpenAiClient() {
     var token = System.getenv("OPENAI_API_KEY");
     var base_url = "https://api.openai.com/";
-    return new OpenAiClientBuilder(token)
-        .baseUrl(base_url)
-        .defaultModel("gpt-3.5-turbo")
-        .build();
+    return new OpenAiClientBuilder(token).baseUrl(base_url).defaultModel("gpt-3.5-turbo").build();
   }
 
   static private OpenAiClient createAnyscaleClient() {
     var token = System.getenv("ANYSCALE_API_TOKEN");
     var base_url = "https://api.endpoints.anyscale.com/";
-    return new OpenAiClientBuilder(token)
-        .baseUrl(base_url)
+    return new OpenAiClientBuilder(token).baseUrl(base_url)
         //.defaultModel("meta-llama/Llama-2-70b-chat-hf")
-        .defaultModel("mistralai/Mixtral-8x7B-Instruct-v0.1")
-        .build();
+        .defaultModel("mistralai/Mixtral-8x7B-Instruct-v0.1").build();
   }
 
   static private OpenAiClient createLocalClient() {
     var token = "dummy";
-    return new OpenAiClientBuilder(token)
-        .baseUrl(LOCAL_BASE_URL)
-        .build();
+    return new OpenAiClientBuilder(token).baseUrl(LOCAL_BASE_URL).build();
   }
 
 
-  static private void javajChat(String provider) {
+  static private void openAiJavaChat(String provider) {
     OpenAiClient client = null;
     switch (provider) {
       case "openai":
@@ -100,28 +61,26 @@ public class Main {
         throw new IllegalArgumentException("Unknown provider: " + provider);
     }
 
-    var function = ChatFunction.builder()
-        .name("get_work_history")
+    var function = ChatFunction.builder().name("get_work_history")
         .description("Get work history of all employees of a company")
-        .executor(CompanyInfoRequest.class, Main::getCompanyInfo)
-        .build();
+        .executor(CompanyInfoRequest.class, Functions::getCompanyInfo).build();
 
     var chat = new OpenAiChat(client, List.of(function));
     chat.start();
   }
 
-  static private void kotlinChat(String provider) {
+  static private void openAiKotlinChat(String provider) {
     var toolsData = getToolsData();
     var model = "";
     var clients = new ArrayList<OpenAI>();
     OpenAI client = null;
     switch (provider) {
       case "openai":
-        client = createOpenAiKotlinClient(OPEN_AI_BASE_URL, System.getenv("OPENAI_API_KEY"));
+        client = createOpenAiKotlinClient(OPEN_AI_BASE_URL + "v1/", System.getenv("OPENAI_API_KEY"));
         model = DEFAULT_OPENAI_MODEL;
         break;
       case "anyscale":
-        client = createOpenAiKotlinClient(ANYSCALE_BASE_URL, System.getenv("ANYSCALE_API_TOKEN"));
+        client = createOpenAiKotlinClient(ANYSCALE_BASE_URL + "/v1/", System.getenv("ANYSCALE_API_TOKEN"));
         model = DEFAULT_ANYSCALE_MODEL;
         break;
       case "local":
@@ -132,18 +91,55 @@ public class Main {
     }
     clients.add(client);
     // add the local client for testing
-    clients.add(createOpenAiKotlinClient(LOCAL_BASE_URL, "dummy"));
+    //clients.add(createOpenAiKotlinClient(LOCAL_BASE_URL, "dummy"));
     var chat = new OpenAiKotlinChat(clients, model, toolsData);
     chat.start();
   }
 
+  static private void simpleOpenAiChat(String provider) {
+    var baseUrl = "";
+    var apiKey = "";
+    var model = "";
+    var functionsData = getFunctionsData();
+    OpenAI client = null;
+    switch (provider) {
+      case "openai":
+        baseUrl = OPEN_AI_BASE_URL;
+        apiKey = System.getenv("OPENAI_API_KEY");
+        model = DEFAULT_OPENAI_MODEL;
+        break;
+      case "anyscale":
+        baseUrl = ANYSCALE_BASE_URL;
+        apiKey = System.getenv("ANYSCALE_API_TOKEN");
+        model = DEFAULT_ANYSCALE_MODEL;
+        break;
+      case "local":
+        baseUrl = LOCAL_BASE_URL;
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown provider: " + provider);
+    }
+
+    var chat = new SimpleOpenAiChat(baseUrl, apiKey, model, functionsData);
+    chat.start();
+  }
+
+
+
   public static void main(String[] args) {
+    // --- Use the openai-java library ---
     //javaChat("openai");
     //javaChat("anyscale");
     //javaChat("local");
 
-    //kotlinChat("openai");
-    kotlinChat("anyscale");
-    //kotlinChat("local");
+    // --- Use the openai-kotlin library ---
+    //openAiKotlinChat("openai");
+    //openAiKotlinChat("anyscale");
+    //openAiKotlinChat("local");
+
+    // --- Use the simple-openai library (Java) ---
+    //simpleOpenAiChat("openai");
+    simpleOpenAiChat("anyscale");
+    //simpleOpenAiChat("local");
   }
 }

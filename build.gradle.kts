@@ -28,7 +28,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation("org.slf4j:slf4j-api:2.0.11") // SLF4J API
     implementation("ch.qos.logback:logback-classic:1.4.14") // Logback implementation
-
+    implementation("io.github.sashirestela:simple-openai:1.3.0")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

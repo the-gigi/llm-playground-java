@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
+
 internal fun ToolCall.Function.execute(): String {
     val functionToCall = availableFunctions[function.name] ?: error("Function ${function.name} not found")
     val functionArgs = function.argumentsAsJson()
@@ -19,9 +20,9 @@ private val availableFunctions = mapOf(
 
 private fun getCompanyInfo(args: JsonObject): String {
     val companyName = args.getValue("companyName").jsonPrimitive.content
-    val r = Main.CompanyInfoRequest();
+    val r = CompanyInfoRequest();
     r.name = companyName;
-    val companyInfo = Main.getCompanyInfo(r)
+    val companyInfo = Functions.getCompanyInfo(r)
 
     // generate json for company info
     //val employees = Map<String, List<String>>.of()
