@@ -14,9 +14,9 @@ import kotlinx.serialization.json.Json
 
 
 // Doesn't work on Anyscale due to different model schema (missing `created` field
-fun getModels(client: OpenAI): List<Model> {
+fun getModels(client: OpenAI): List<String> {
     return runBlocking {
-        client.models()
+        client.models().map { it.id.id }
     }
 }
 
@@ -25,7 +25,7 @@ internal fun getCompletionResponse(client: OpenAI, messages: List<String>, model
 
     val chatMessages : MutableList<ChatMessage> = mutableListOf();
     if (messages.isEmpty()) {
-        chatMessages.add(ChatMessage(ChatRole.System, "You are a helpful assistan"))
+        chatMessages.add(ChatMessage(ChatRole.System, "You are a helpful assistant"))
     }
 
     for (m in messages) {
@@ -108,21 +108,25 @@ private fun getParametersData(arguments: List<FunctionToolCallArgumentData>): Pa
 }
 
 internal fun getChatCompletionRequest(model: String, messages: List<ChatMessage>, toolsData: List<FunctionToolCallData>) : ChatCompletionRequest {
-    val tools = ArrayList<Tool>()
-    for (td in toolsData) {
-        val paramData = getParametersData(td.arguments)
-        val jsonString = Json.encodeToString(paramData)
-        val params = Parameters.fromJsonString(jsonString)
-        val func = FunctionTool(td.functionName, params)
-        val tool = Tool(ToolType.Function, td.description, func)
-        tools.add(tool)
-    }
+
 
     val builder  = ChatCompletionRequestBuilder()
     builder.model = ModelId(model)
     builder.messages = messages
-    builder.tools = tools
-    builder.toolChoice = ToolChoice.Auto
+
+    if (toolsData.isNotEmpty()) {
+        val tools = ArrayList<Tool>()
+        for (td in toolsData) {
+            val paramData = getParametersData(td.arguments)
+            val jsonString = Json.encodeToString(paramData)
+            val params = Parameters.fromJsonString(jsonString)
+            val func = FunctionTool(td.functionName, params)
+            val tool = Tool(ToolType.Function, td.description, func)
+            tools.add(tool)
+        }
+        builder.tools = tools
+        builder.toolChoice = ToolChoice.Auto
+    }
 
     return builder.build()
 }

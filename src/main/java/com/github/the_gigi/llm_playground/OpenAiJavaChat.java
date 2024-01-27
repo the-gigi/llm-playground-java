@@ -3,6 +3,7 @@ package com.github.the_gigi.llm_playground;
 import static com.github.the_gigi.llm_playground.TextUtil.breakStringIntoLines;
 
 import com.github.the_gigi.open_ai_client.OpenAiClient;
+import com.theokanning.openai.model.Model;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest.ChatCompletionRequestFunctionCall;
 import com.theokanning.openai.completion.chat.ChatFunction;
@@ -12,53 +13,22 @@ import com.theokanning.openai.service.FunctionExecutor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
-public class OpenAiChat {
+
+class OpenAiJavaClient implements LLMClient {
+
   private final OpenAiClient client;
-  private final Scanner scanner;
+
   private final List<ChatFunction> functions;
-  private final String model;
 
-  public OpenAiChat(OpenAiClient client, List<ChatFunction> functions) {
-    this.scanner = new Scanner(System.in);
+  public OpenAiJavaClient(OpenAiClient client, List<ChatFunction> functions) {
     this.client = client;
-
-    var defaultModel = client.getDefaultModel();
-    this.model = defaultModel.isEmpty() ? chooseModel() : defaultModel;
     this.functions = functions;
   }
 
-  private String getUserInput() {
-    return this.scanner.nextLine();
-  }
-  private String chooseModel() {
-    // Get all models
-    var models = this.client.listModels();
-
-    // Print all models with sequential numbers
-    System.out.println("Available models:");
-    System.out.println("-----------------");
-    for (int i = 0; i < models.size(); i++) {
-      var model = models.get(i);
-      System.out.println("[" + (i + 1) + "] " + model.getId());
-    }
-    System.out.println("-----------------");
-    // Ask user to select a model
-    var index = -1;
-    while (index < 0 || index >= models.size()) {
-      System.out.printf("Choose a model by entering its number (1 - %d): ", models.size());
-      var modelNumber = getUserInput();
-      try {
-        index = Integer.parseInt(modelNumber) - 1;
-      } catch (NumberFormatException e) {
-        System.out.println("Invalid model number");
-      }
-    }
-
-    return models.get(index).getId();
-  }
-
-  private String complete(String prompt) {
+  @Override
+  public String complete(String prompt, String model) {
     var messages = new ArrayList<ChatMessage>();
     messages.add(new ChatMessage(ChatMessageRole.USER.value(), prompt));
 
@@ -70,7 +40,7 @@ public class OpenAiChat {
 
     var builder = ChatCompletionRequest
         .builder()
-        .model(this.model)
+        .model(model)
         .maxTokens(100)
         .n(1)
         .temperature(0.9);
@@ -93,8 +63,8 @@ public class OpenAiChat {
 
       // Not a function call just return the result
       var functionCall = message.getFunctionCall();
-      if (functionCall == null) {
-        return breakStringIntoLines(message.getContent(), 80);
+      if (functionCall == null || executor == null) {
+        return message.getContent();
       }
 
       // Execute the function call (if it raises an exception send the exception message back)
@@ -103,20 +73,14 @@ public class OpenAiChat {
     }
   }
 
-  public void start() {
-    // Run in a loop until user says "bye"
-    while (true) {
-      // Get user input
-      System.out.println("---- prompt (type `bye` to exit) ----");
-      var prompt = getUserInput();
-      if (prompt.equals("bye")) {
-        break;
-      }
+  @Override
+  public List<String> listModels() {
+    return this.client.listModels().stream().map(Model::getId).collect(Collectors.toList());
+  }
+}
 
-      var response = this.complete(prompt);
-
-      System.out.println("----- response -----");
-      System.out.println(response);
-    }
+public class OpenAiJavaChat extends BaseChat {
+  public OpenAiJavaChat(OpenAiClient client, List<ChatFunction> functions) {
+    super(new OpenAiJavaClient(client, functions), "");
   }
 }

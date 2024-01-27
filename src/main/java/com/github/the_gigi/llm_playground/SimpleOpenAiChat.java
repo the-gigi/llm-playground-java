@@ -11,65 +11,34 @@ import io.github.sashirestela.openai.domain.chat.message.ChatMsgResponse;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsgTool;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsgUser;
 import io.github.sashirestela.openai.domain.chat.tool.ChatFunction;
+import io.github.sashirestela.openai.domain.model.ModelResponse;
 import io.github.sashirestela.openai.function.FunctionExecutor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-public class SimpleOpenAiChat {
+
+class SimpleOpenAiClient implements LLMClient {
+
   private final SimpleOpenAI openai;
 
-  private final Scanner scanner;
-  private final List<FunctionInfo> functions;
   private final String model;
+  private final List<FunctionInfo> functions;
 
-  public SimpleOpenAiChat(String baseUrl, String apiKey, String defaultModel , List<FunctionInfo> functions) {
-    this.scanner = new Scanner(System.in);
+  public SimpleOpenAiClient(String baseUrl, String apiKey, String model,
+      List<FunctionInfo> functions) {
     this.openai = SimpleOpenAI.builder()
         .urlBase(baseUrl)
         .apiKey(apiKey)
         .build();
-
-    this.model = defaultModel.isEmpty() ? chooseModel() : defaultModel;
+    this.model = model;
     this.functions = functions;
   }
 
-  private String getUserInput() {
-    return this.scanner.nextLine();
-  }
-  private String chooseModel() {
-    AtomicInteger selectedIndex = new AtomicInteger(-1);
-    // Get all models
-    var models = this.openai.models().getList().whenComplete((r, e) -> {
-      if (e != null) {
-        System.out.println("Error getting models: " + e.getMessage());
-      }
-      // Print all models with sequential numbers
-      System.out.println("Available models:");
-      System.out.println("-----------------");
-      for (int i = 0; i < r.size(); i++) {
-        var model = r.get(i);
-        System.out.println("[" + (i + 1) + "] " + model.getId());
-      }
-      System.out.println("-----------------");
-      // Ask user to select a model
-      var index = -1;
-      while (index < 0 || index >= r.size()) {
-        System.out.printf("Choose a model by entering its number (1 - %d): ", r.size());
-        var modelNumber = getUserInput();
-        try {
-          index = Integer.parseInt(modelNumber) - 1;
-        } catch (NumberFormatException ee) {
-          System.out.println("Invalid model number");
-        }
-      }
-      selectedIndex.set(index);
-    }).join();
-    return models.get(selectedIndex.get()).getId();
-  }
-
-  private String complete(String prompt) {
+  @Override
+  public String complete(String prompt, String model) {
     var functionExecutor = new FunctionExecutor();
     this.functions.forEach(f -> functionExecutor.enrollFunction(
         ChatFunction.builder()
@@ -101,7 +70,7 @@ public class SimpleOpenAiChat {
 
       var toolCalls = message.getToolCalls();
       if (toolCalls == null || toolCalls.isEmpty()) {
-        return breakStringIntoLines(message.getContent(), 80);
+        return message.getContent();
       }
 
       // Execute the function call (if it raises an exception send the exception message back)
@@ -112,20 +81,26 @@ public class SimpleOpenAiChat {
     }
   }
 
-  public void start() {
-    // Run in a loop until user says "bye"
-    while (true) {
-      // Get user input
-      System.out.println("---- prompt (type `bye` to exit) ----");
-      var prompt = getUserInput();
-      if (prompt.equals("bye")) {
-        break;
+  @Override
+  public List<String> listModels() {
+    var models = new ArrayList<String>();
+    var modelsResponse = this.openai.models().getList().whenComplete((r, e) -> {
+      if (e != null) {
+        System.out.println("Error getting models: " + e.getMessage());
       }
+      models.addAll(r.stream().map(ModelResponse::getId).toList());
+    }).join();
+    return models;
+  }
+}
 
-      var response = this.complete(prompt);
 
-      System.out.println("----- response -----");
-      System.out.println(response);
-    }
+public class SimpleOpenAiChat  extends BaseChat {
+
+  public SimpleOpenAiChat(
+      String baseUrl,
+      String apiKey, String defaultModel,
+      List<FunctionInfo> functions) {
+    super(new SimpleOpenAiClient(baseUrl, apiKey, defaultModel, functions), defaultModel);
   }
 }

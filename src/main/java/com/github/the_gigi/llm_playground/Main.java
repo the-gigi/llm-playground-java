@@ -9,7 +9,6 @@ import com.aallam.openai.client.OpenAI;
 import com.github.the_gigi.open_ai_client.OpenAiClient;
 import com.github.the_gigi.open_ai_client.OpenAiClientBuilder;
 import com.theokanning.openai.completion.chat.ChatFunction;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -46,33 +45,24 @@ public class Main {
 
 
   static private void openAiJavaChat(String provider) {
-    OpenAiClient client = null;
-    switch (provider) {
-      case "openai":
-        client = createRealOpenAiClient();
-        break;
-      case "anyscale":
-        client = createAnyscaleClient();
-        break;
-      case "local":
-        client = createLocalClient();
-        break;
-      default:
-        throw new IllegalArgumentException("Unknown provider: " + provider);
-    }
+    OpenAiClient client = switch (provider) {
+      case "openai" -> createRealOpenAiClient();
+      case "anyscale" -> createAnyscaleClient();
+      case "local" -> createLocalClient();
+      default -> throw new IllegalArgumentException("Unknown provider: " + provider);
+    };
 
     var function = ChatFunction.builder().name("get_work_history")
         .description("Get work history of all employees of a company")
         .executor(CompanyInfoRequest.class, Functions::getCompanyInfo).build();
 
-    var chat = new OpenAiChat(client, List.of(function));
+    var chat = new OpenAiJavaChat(client, List.of(function));
     chat.start();
   }
 
   static private void openAiKotlinChat(String provider) {
     var toolsData = getToolsData();
     var model = "";
-    var clients = new ArrayList<OpenAI>();
     OpenAI client = null;
     switch (provider) {
       case "openai":
@@ -89,10 +79,9 @@ public class Main {
       default:
         throw new IllegalArgumentException("Unknown provider: " + provider);
     }
-    clients.add(client);
-    // add the local client for testing
-    //clients.add(createOpenAiKotlinClient(LOCAL_BASE_URL, "dummy"));
-    var chat = new OpenAiKotlinChat(clients, model, toolsData);
+
+    //toolsData = List.of(); // No tools! broken in the kotlin client
+    var chat = new OpenAiKotlinChat(client, model, toolsData);
     chat.start();
   }
 
@@ -124,22 +113,55 @@ public class Main {
     chat.start();
   }
 
+  static private void langChainChat(String provider) {
+    var baseUrl = "";
+    var apiKey = "";
+    var model = "";
+    var functionsData = getFunctionsData();
+    switch (provider) {
+      case "openai":
+        baseUrl = OPEN_AI_BASE_URL + "/v1/";
+        apiKey = System.getenv("OPENAI_API_KEY");
+        model = DEFAULT_OPENAI_MODEL;
+        break;
+      case "anyscale":
+        baseUrl = ANYSCALE_BASE_URL + "/v1/";
+        apiKey = System.getenv("ANYSCALE_API_TOKEN");
+        model = DEFAULT_ANYSCALE_MODEL;
+        break;
+      case "local":
+        baseUrl = LOCAL_BASE_URL;
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown provider: " + provider);
+    }
+
+    var chat = new LangChainChat(baseUrl, apiKey, model, functionsData);
+    chat.start();
+  }
+
 
 
   public static void main(String[] args) {
     // --- Use the openai-java library ---
-    //javaChat("openai");
-    //javaChat("anyscale");
-    //javaChat("local");
+//    openAiJavaChat("openai");
+//    openAiJavaChat("anyscale");
+//    openAiJavaChat("local");
 
-    // --- Use the openai-kotlin library ---
+    // --- Use the openai-kotlin library (Kotlin) ---
     //openAiKotlinChat("openai");
     //openAiKotlinChat("anyscale");
     //openAiKotlinChat("local");
 
-    // --- Use the simple-openai library (Java) ---
+    // --- Use the simple-openai library ---
     //simpleOpenAiChat("openai");
-    simpleOpenAiChat("anyscale");
+    //simpleOpenAiChat("anyscale");
     //simpleOpenAiChat("local");
+
+    // --- Use the LangChain4j  library ---
+    langChainChat("openai");
+    //langChainChat("anyscale");
+    //langChainChat("local");
+
   }
 }
