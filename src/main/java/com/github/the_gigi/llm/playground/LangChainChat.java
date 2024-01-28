@@ -10,7 +10,7 @@ import java.util.List;
 public class LangChainChat extends BaseChat {
 
   public LangChainChat(Provider provider, List<Object> tools) {
-    super(LangChainClient.builder(provider, Library.LANG_CHAIN4J)
+    super(LangChainClient.builder(provider)
         .tools(tools)
         .build(), "");
   }

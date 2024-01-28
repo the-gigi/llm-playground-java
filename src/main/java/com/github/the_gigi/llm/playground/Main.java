@@ -137,7 +137,7 @@ public class Main {
 
     for (var provider : List.of(Provider.OPEN_AI, Provider.ANYSCALE)) {
       System.out.println("=========== " + provider + " ===========");
-      var cli = LangChainClient.builder(provider, Library.LANG_CHAIN4J)
+      var cli = LangChainClient.builder(provider)
           .tools(List.of(new LangChainCompanyInfo()))
           .build();
 

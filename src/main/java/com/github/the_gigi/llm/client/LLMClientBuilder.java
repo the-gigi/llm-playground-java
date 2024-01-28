@@ -2,6 +2,7 @@ package com.github.the_gigi.llm.client;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public class LLMClientBuilder {
 
@@ -111,17 +112,17 @@ public class LLMClientBuilder {
       }
     }
 
-    switch (this.library) {
+    var tools = Optional.ofNullable(this.tools).orElse(List.of());
+    return switch (this.library) {
 //      case OPENAI_JAVA:
 //        return new OpenAiJavaClient(this.baseUrl, this.apiKey, this.model);
-      case OPENAI_KOTLIN:
-        return new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model, this.tools);
-      case LANG_CHAIN4J:
-        return new LangChainClient(this.baseUrl, this.apiKey, this.model, this.tools);
-      case SIMPLE_OPENAI:
-        return new SimpleOpenAiClient(this.baseUrl, this.apiKey, this.model, this.tools);
-      default:
-        throw new IllegalArgumentException("Unknown library: " + library);
-    }
+      case OPENAI_KOTLIN ->
+          new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model, tools);
+      case LANG_CHAIN4J ->
+          new LangChainClient(this.baseUrl, this.apiKey, this.model, tools);
+      case SIMPLE_OPENAI ->
+          new SimpleOpenAiClient(this.baseUrl, this.apiKey, this.model, tools);
+      default -> throw new IllegalArgumentException("Unknown library: " + library);
+    };
   }
 }

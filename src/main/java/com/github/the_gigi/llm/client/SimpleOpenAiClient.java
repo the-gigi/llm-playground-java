@@ -50,46 +50,7 @@ public class SimpleOpenAiClient implements LLMClient {
 
   @Override
   public String complete(String prompt) {
-    var functionExecutor = new FunctionExecutor();
-    this.functions.forEach(f -> functionExecutor.enrollFunction(
-        ChatFunction.builder()
-            .name(f.name())
-            .description(f.description())
-            .functionalClass(f.funcClass())
-            .build()));
-
-    var messages = new ArrayList<ChatMsg>();
-    messages.add(new ChatMsgUser(prompt));
-    var chatBuilder = ChatRequest.builder()
-        .model(this.model)
-        .maxTokens(500)
-        .n(1)
-        .temperature(0.9)
-        .tools(functionExecutor.getToolFunctions());
-
-    // Loop until all functions are executed
-    ChatMsgResponse message = null;
-    while (true) {
-      // Create the request with current messages (the builder is already configured for the rest)
-      var r = chatBuilder.messages(messages).build();
-      message = this.openai.chatCompletions()
-          .create(r)
-          .join()
-          .firstMessage();
-
-      // Check if there is a tool call
-
-      var toolCalls = message.getToolCalls();
-      if (toolCalls == null || toolCalls.isEmpty()) {
-        return message.getContent();
-      }
-
-      // Execute the function call (if it raises an exception send the exception message back)
-      var chatToolCall = message.getToolCalls().get(0);
-      var result = functionExecutor.execute(chatToolCall.getFunction());
-      messages.add(message);
-      messages.add(new ChatMsgTool(result.toString(), chatToolCall.getId()));
-    }
+    return this.complete(CompletionRequest.builder().prompt(prompt).build());
   }
 
   @Override
