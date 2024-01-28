@@ -3,8 +3,9 @@ package com.github.the_gigi.llm.client;
 
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
+import com.github.the_gigi.llm.domain.CompletionRequest;
 import com.github.the_gigi.llm.playground.Functions.FunctionInfo;
-import com.github.the_gigi.llm.client.LLMClient;
+import com.github.the_gigi.llm.domain.LLMClient;
 
 import io.github.sashirestela.openai.SimpleOpenAI;
 import io.github.sashirestela.openai.domain.chat.ChatRequest;

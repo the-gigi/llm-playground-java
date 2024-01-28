@@ -1,6 +1,6 @@
 package com.github.the_gigi.llm.playground;
 
-import com.github.the_gigi.llm.client.LLMClient;
+import com.github.the_gigi.llm.domain.LLMClient;
 import static com.github.the_gigi.llm.playground.TextUtil.breakStringIntoLines;
 
 import java.util.List;

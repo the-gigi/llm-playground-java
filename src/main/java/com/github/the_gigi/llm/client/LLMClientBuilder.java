@@ -1,6 +1,7 @@
 package com.github.the_gigi.llm.client;
 
 
+import com.github.the_gigi.llm.domain.LLMClient;
 import java.util.List;
 import java.util.Optional;
 

@@ -7,6 +7,8 @@ import static com.github.the_gigi.llm.client.OpenAiClientHelperKt.getModels;
 import com.aallam.openai.client.OpenAI;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
+import com.github.the_gigi.llm.domain.CompletionRequest;
+import com.github.the_gigi.llm.domain.LLMClient;
 import java.util.List;
 
 public class OpenAiKotlinClient implements LLMClient {

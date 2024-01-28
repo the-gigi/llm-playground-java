@@ -1,5 +1,7 @@
 package com.github.the_gigi.llm.client;
 
+import com.github.the_gigi.llm.domain.CompletionRequest;
+import com.github.the_gigi.llm.domain.LLMClient;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;

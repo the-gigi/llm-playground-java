@@ -14,7 +14,7 @@ import com.github.the_gigi.openai.client.OpenAiClient;
 import com.github.the_gigi.openai.client.OpenAiClientBuilder;
 import java.util.List;
 
-import com.github.the_gigi.llm.client.LLMClient;
+import com.github.the_gigi.llm.domain.LLMClient;
 
 
 public class Main {
@@ -124,7 +124,7 @@ public class Main {
           .tools(getSimpleOpenAiTools().stream().map(f -> (Object) f).toList())
           .build();
 
-      var response = cli.complete("what's the work history of employees that work at uber?");
+      var response = cli.complete("what's the work history of people that work at uber?");
       System.out.println(response);
     }
   }
@@ -148,8 +148,8 @@ public class Main {
 
   public static void main(String[] args) {
     //runOpenAiJava();
-    runOpenAiKotlin();
-    //runSimpleOpenAi();
+    //runOpenAiKotlin();
+    runSimpleOpenAi();
     //runLangChain();
   }
 }

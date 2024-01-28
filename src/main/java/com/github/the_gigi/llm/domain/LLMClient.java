@@ -1,4 +1,4 @@
-package com.github.the_gigi.llm.client;
+package com.github.the_gigi.llm.domain;
 
 import java.util.List;
 
