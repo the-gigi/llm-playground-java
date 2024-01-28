@@ -3,91 +3,15 @@ package com.github.the_gigi.llm.playground;
 
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
-import com.github.the_gigi.llm.client.LangChainClient;
-
+import com.github.the_gigi.llm.client.SimpleOpenAiClient;
 import java.util.List;
-
-//class SimpleOpenAiClient implements LLMClient {
-//
-//  private final SimpleOpenAI openai;
-//
-//  private final String model;
-//  private final List<FunctionInfo> functions;
-//
-//  public SimpleOpenAiClient(String baseUrl, String apiKey, String model,
-//      List<FunctionInfo> functions) {
-//    this.openai = SimpleOpenAI.builder()
-//        .urlBase(baseUrl)
-//        .apiKey(apiKey)
-//        .build();
-//    this.model = model;
-//    this.functions = functions;
-//  }
-//
-//  @Override
-//  public String complete(String prompt, String model) {
-//    var functionExecutor = new FunctionExecutor();
-//    this.functions.forEach(f -> functionExecutor.enrollFunction(
-//        ChatFunction.builder()
-//            .name(f.name())
-//            .description(f.description())
-//            .functionalClass(f.funcClass())
-//            .build()));
-//
-//    var messages = new ArrayList<ChatMsg>();
-//    messages.add(new ChatMsgUser(prompt));
-//    var chatBuilder = ChatRequest.builder()
-//        .model(this.model)
-//        .maxTokens(500)
-//        .n(1)
-//        .temperature(0.9)
-//        .tools(functionExecutor.getToolFunctions());
-//
-//    // Loop until all functions are executed
-//    ChatMsgResponse message = null;
-//    while (true) {
-//      // Create the request with current messages (the builder is already configured for the rest)
-//      var r = chatBuilder.messages(messages).build();
-//      message = this.openai.chatCompletions()
-//          .create(r)
-//          .join()
-//          .firstMessage();
-//
-//      // Check if there is a tool call
-//
-//      var toolCalls = message.getToolCalls();
-//      if (toolCalls == null || toolCalls.isEmpty()) {
-//        return message.getContent();
-//      }
-//
-//      // Execute the function call (if it raises an exception send the exception message back)
-//      var chatToolCall = message.getToolCalls().get(0);
-//      var result = functionExecutor.execute(chatToolCall.getFunction());
-//      messages.add(message);
-//      messages.add(new ChatMsgTool(result.toString(), chatToolCall.getId()));
-//    }
-//  }
-//
-//  @Override
-//  public List<String> listModels() {
-//    var models = new ArrayList<String>();
-//    var modelsResponse = this.openai.models().getList().whenComplete((r, e) -> {
-//      if (e != null) {
-//        System.out.println("Error getting models: " + e.getMessage());
-//      }
-//      models.addAll(r.stream().map(ModelResponse::getId).toList());
-//    }).join();
-//    return models;
-//  }
-//}
 
 
 public class SimpleOpenAiChat extends BaseChat {
 
   public SimpleOpenAiChat(Provider provider, List<Object> tools) {
-    super(LangChainClient.builder(provider, Library.SIMPLE_OPENAI)
+    super(SimpleOpenAiClient.builder(provider, Library.SIMPLE_OPENAI)
         .tools(tools)
         .build(), "");
-    //super(new SimpleOpenAiClient(baseUrl, apiKey, defaultModel, functions), defaultModel);
   }
 }

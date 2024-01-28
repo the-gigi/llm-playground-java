@@ -1,13 +1,13 @@
-package com.github.the_gigi.llm.playground
+package com.github.the_gigi.llm.client
 
 import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.core.Parameters
 import com.aallam.openai.client.OpenAI
 import kotlinx.coroutines.runBlocking
-import com.aallam.openai.api.model.Model
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAIConfig
 import com.aallam.openai.client.OpenAIHost
+import com.github.the_gigi.llm.playground.execute
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

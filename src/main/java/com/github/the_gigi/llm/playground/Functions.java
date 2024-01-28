@@ -56,7 +56,7 @@ public class Functions {
   }
 
 
-  public static List<FunctionInfo> getFunctionsData() {
+  public static List<FunctionInfo> getSimpleOpenAiTools() {
     return List.of(
         new FunctionInfo(
             "get_company_info",

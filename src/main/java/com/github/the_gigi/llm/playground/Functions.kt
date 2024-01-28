@@ -1,6 +1,8 @@
 package com.github.the_gigi.llm.playground
 
 import com.aallam.openai.api.chat.ToolCall
+import com.github.the_gigi.llm.client.FunctionToolCallArgumentData
+import com.github.the_gigi.llm.client.FunctionToolCallData
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -35,7 +37,7 @@ private fun getCompanyInfo(args: JsonObject): String {
     return json;
 }
 
-internal fun getToolsData(): List<FunctionToolCallData> {
+internal fun getOpenAiKotlinTools(): List<FunctionToolCallData> {
     return listOf(
             FunctionToolCallData(
                     functionName = "get_company_info",

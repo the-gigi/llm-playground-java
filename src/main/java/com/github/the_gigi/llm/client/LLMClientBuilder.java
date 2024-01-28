@@ -96,13 +96,13 @@ public class LLMClientBuilder {
       switch (this.provider) {
         case OPEN_AI:
           this.baseUrl = OPENAI_BASE_URL;
-          if (this.library == Library.LANG_CHAIN4J) {
+          if (this.library == Library.LANG_CHAIN4J || this.library == Library.OPENAI_KOTLIN) {
             this.baseUrl += "v1/";
           }
           break;
         case ANYSCALE:
           this.baseUrl = ANYSCALE_BASE_URL;
-          if (this.library == Library.LANG_CHAIN4J) {
+          if (this.library == Library.LANG_CHAIN4J || this.library == Library.OPENAI_KOTLIN) {
             this.baseUrl += "/v1/";
           }
           break;
@@ -114,8 +114,8 @@ public class LLMClientBuilder {
     switch (this.library) {
 //      case OPENAI_JAVA:
 //        return new OpenAiJavaClient(this.baseUrl, this.apiKey, this.model);
-//      case OPENAI_KOTLIN:
-//        return new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model);
+      case OPENAI_KOTLIN:
+        return new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model, this.tools);
       case LANG_CHAIN4J:
         return new LangChainClient(this.baseUrl, this.apiKey, this.model, this.tools);
       case SIMPLE_OPENAI:
