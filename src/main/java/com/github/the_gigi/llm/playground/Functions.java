@@ -67,7 +67,3 @@ public class Functions {
 }
 
 
-//public static List<Object> getFunctionsData() {
-//  return List.of(new LangChainCompanyInfo());
-//}
-

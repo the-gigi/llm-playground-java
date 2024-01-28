@@ -16,7 +16,9 @@ public class LLMClientBuilder {
 
   public enum Provider {
     OPEN_AI,
-    ANYSCALE
+    ANYSCALE,
+
+    LOCAL
   }
 
   public enum Library {
@@ -26,9 +28,9 @@ public class LLMClientBuilder {
     SIMPLE_OPENAI
   }
 
-  private Provider provider;
+  private final Provider provider;
 
-  private Library library;
+  private final Library library;
   private String apiKey = "";
   private String baseUrl = "";
   private String model = "";
@@ -101,14 +103,13 @@ public class LLMClientBuilder {
         case ANYSCALE:
           this.baseUrl = ANYSCALE_BASE_URL;
           if (this.library == Library.LANG_CHAIN4J) {
-            this.baseUrl += "v1/";
+            this.baseUrl += "/v1/";
           }
           break;
         default:
           throw new IllegalArgumentException("Unknown provider: " + provider);
       }
     }
-
 
     switch (this.library) {
 //      case OPENAI_JAVA:
@@ -117,8 +118,8 @@ public class LLMClientBuilder {
 //        return new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model);
       case LANG_CHAIN4J:
         return new LangChainClient(this.baseUrl, this.apiKey, this.model, this.tools);
-//      case SIMPLE_OPENAI:
-//        return new SimpleOpenAiChat(this.baseUrl, this.apiKey, this.model);
+      case SIMPLE_OPENAI:
+        return new SimpleOpenAiClient(this.baseUrl, this.apiKey, this.model, this.tools);
       default:
         throw new IllegalArgumentException("Unknown library: " + library);
     }

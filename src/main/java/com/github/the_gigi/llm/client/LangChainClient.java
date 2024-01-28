@@ -25,7 +25,10 @@ public class LangChainClient implements LLMClient {
   public static LLMClientBuilder builder(Provider provider, Library library) {
     return new LLMClientBuilder(provider, library);
   }
-  public LangChainClient(String baseUrl, String apiKey, String model,
+  public LangChainClient(
+      String baseUrl,
+      String apiKey,
+      String model,
       @NotNull List<Object> tools) {
 
     this.defaultBaseUrl = baseUrl;

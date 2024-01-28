@@ -1,20 +1,12 @@
-//package com.github.the_gigi.llm.playground;
-//
-//
-//import com.github.the_gigi.llm.playground.Functions.FunctionInfo;
-//import io.github.sashirestela.openai.SimpleOpenAI;
-//import io.github.sashirestela.openai.domain.chat.ChatRequest;
-//import io.github.sashirestela.openai.domain.chat.message.ChatMsg;
-//import io.github.sashirestela.openai.domain.chat.message.ChatMsgResponse;
-//import io.github.sashirestela.openai.domain.chat.message.ChatMsgTool;
-//import io.github.sashirestela.openai.domain.chat.message.ChatMsgUser;
-//import io.github.sashirestela.openai.domain.chat.tool.ChatFunction;
-//import io.github.sashirestela.openai.domain.model.ModelResponse;
-//import io.github.sashirestela.openai.function.FunctionExecutor;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//
+package com.github.the_gigi.llm.playground;
+
+
+import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
+import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
+import com.github.the_gigi.llm.client.LangChainClient;
+
+import java.util.List;
+
 //class SimpleOpenAiClient implements LLMClient {
 //
 //  private final SimpleOpenAI openai;
@@ -88,14 +80,14 @@
 //    return models;
 //  }
 //}
-//
-//
-//public class SimpleOpenAiChat  extends BaseChat {
-//
-//  public SimpleOpenAiChat(
-//      String baseUrl,
-//      String apiKey, String defaultModel,
-//      List<FunctionInfo> functions) {
-//    super(new SimpleOpenAiClient(baseUrl, apiKey, defaultModel, functions), defaultModel);
-//  }
-//}
+
+
+public class SimpleOpenAiChat extends BaseChat {
+
+  public SimpleOpenAiChat(Provider provider, List<Object> tools) {
+    super(LangChainClient.builder(provider, Library.SIMPLE_OPENAI)
+        .tools(tools)
+        .build(), "");
+    //super(new SimpleOpenAiClient(baseUrl, apiKey, defaultModel, functions), defaultModel);
+  }
+}

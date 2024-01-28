@@ -8,7 +8,7 @@ public record CompletionRequest(
 
     List<Object> tools,
     Integer maxTokens,
-    Integer temperature,
+    Double temperature,
     Integer topP,
     Integer n,
     String model,
@@ -20,7 +20,7 @@ public record CompletionRequest(
 
     private List<Object> tools = List.of();
     private Integer maxTokens;
-    private Integer temperature;
+    private Double temperature;
     private Integer topP;
     private Integer n;
     private String model;
@@ -46,7 +46,7 @@ public record CompletionRequest(
       return this;
     }
 
-    public Builder temperature(Integer temperature) {
+    public Builder temperature(Double temperature) {
       this.temperature = temperature;
       return this;
     }

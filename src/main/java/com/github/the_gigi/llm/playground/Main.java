@@ -1,5 +1,6 @@
 package com.github.the_gigi.llm.playground;
 
+import static com.github.the_gigi.llm.playground.Functions.getFunctionsData;
 import static com.github.the_gigi.llm.playground.FunctionsKt.getToolsData;
 import static com.github.the_gigi.llm.playground.OpenAiClientHelperKt.createOpenAiKotlinClient;
 
@@ -7,15 +8,13 @@ import static com.github.the_gigi.llm.playground.OpenAiClientHelperKt.createOpen
 import com.aallam.openai.client.OpenAI;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
-import com.github.the_gigi.llm.client.LangChainClient;
+import com.github.the_gigi.llm.client.SimpleOpenAiClient;
 import com.github.the_gigi.openai.client.OpenAiClient;
 import com.github.the_gigi.openai.client.OpenAiClientBuilder;
-import com.theokanning.openai.completion.chat.ChatFunction;
 import java.util.List;
 
 import com.github.the_gigi.llm.client.LLMClient;
-import com.github.the_gigi.llm.client.LLMClientBuilder;
-import com.github.the_gigi.llm.client.LangChainClient;
+
 
 
 public class Main {
@@ -97,67 +96,23 @@ public class Main {
 //    return chat.getClient();
 //  }
 
-//  static LLMClient simpleOpenAiChat(String provider, Boolean start ) {
-//    var baseUrl = "";
-//    var apiKey = "";
-//    var model = "";
-//    var functionsData = Functions.getFunctionsData();
-//    OpenAI client = null;
-//    switch (provider) {
-//      case "openai":
-//        baseUrl = OPEN_AI_BASE_URL;
-//        apiKey = System.getenv("OPENAI_API_KEY");
-//        model = DEFAULT_OPENAI_MODEL;
-//        break;
-//      case "anyscale":
-//        baseUrl = ANYSCALE_BASE_URL;
-//        apiKey = System.getenv("ANYSCALE_API_TOKEN");
-//        model = DEFAULT_ANYSCALE_MODEL;
-//        break;
-//      case "local":
-//        baseUrl = LOCAL_BASE_URL;
-//        break;
-//      default:
-//        throw new IllegalArgumentException("Unknown provider: " + provider);
-//    }
-//
-//    var chat = new SimpleOpenAiChat(baseUrl, apiKey, model, functionsData);
-//    if (start) {
-//      chat.start();
-//    }
-//    return chat.getClient();
-//  }
+  static LLMClient simpleOpenAiChat(Provider provider, Boolean start) {
+    var tools = getFunctionsData().stream().map(f -> (Object) f).toList();
+    var chat = new SimpleOpenAiChat(provider, tools);
+    if (start) {
+      chat.start();
+    }
+    return chat.getClient();
+  }
 
-//  static private LLMClient langChainChat(String provider, boolean start) {
-//    var baseUrl = "";
-//    var apiKey = "n/a";
-//    var model = "n/a";
-//    var functionsData = List.of((Object)new LangChainCompanyInfo());
-//    switch (provider) {
-//      case "openai":
-//        baseUrl = OPEN_AI_BASE_URL + "/v1/";
-//        apiKey = System.getenv("OPENAI_API_KEY");
-//        model = DEFAULT_OPENAI_MODEL;
-//        break;
-//      case "anyscale":
-//        baseUrl = ANYSCALE_BASE_URL + "/v1/";
-//        apiKey = System.getenv("ANYSCALE_API_TOKEN");
-//        model = DEFAULT_ANYSCALE_MODEL;
-//        break;
-//      case "local":
-//        baseUrl = LOCAL_BASE_URL;
-//        break;
-//      default:
-//        throw new IllegalArgumentException("Unknown provider: " + provider);
-//    }
-//
-//    var chat = new LangChainChat(baseUrl, apiKey, model, functionsData);
-//    if (start) {
-//      chat.start();
-//    }
-//    return chat.getClient();
-//  }
-
+  static private LLMClient langChainChat(Provider provider, boolean start) {
+    var tools = List.of((Object) new LangChainCompanyInfo());
+    var chat = new LangChainChat(provider, tools);
+    if (start) {
+      chat.start();
+    }
+    return chat.getClient();
+  }
 
 
   public static void main(String[] args) {
@@ -177,23 +132,34 @@ public class Main {
     //openAiKotlinChat("local");
 
     // --- Use the simple-openai library ---
-    //simpleOpenAiChat("openai");
-    //simpleOpenAiChat("anyscale", true);
-    //simpleOpenAiChat("local");
+    //simpleOpenAiChat(Provider.OPEN_AI, true);
+//    simpleOpenAiChat(Provider.ANYSCALE, true);
+//    simpleOpenAiChat(Provider.LOCAL, true);
 
-    // --- Use the LangChain4j  library ---
-    //langChainChat("openai");
-    //langChainChat("anyscale");
-    //langChainChat("local");
+//    for (var provider : List.of(Provider.OPEN_AI, Provider.ANYSCALE)) {
+//      var cli = SimpleOpenAiClient.builder(provider, Library.SIMPLE_OPENAI)
+//          .tools(getFunctionsData().stream().map(f -> (Object) f).toList())
+//          .build();
+//
+//      var response = cli.complete("what's the work history of google employees?");
+//      System.out.println("=========== " + provider + " ===========");
+//      System.out.println(response);
+//    }
+//  }
 
-    for (var provider : List.of(Provider.OPEN_AI, Provider.ANYSCALE)) {
-      var cli = LangChainClient.builder(Provider.OPEN_AI, Library.LANG_CHAIN4J)
-          .tools(List.of(new LangChainCompanyInfo()))
-          .build();
+  // --- Use the LangChain4j  library ---
+  //langChainChat(Provider.OPEN_AI, true);
+  //langChainChat(Provider.ANYSCALE, true);
+  //langChainChat(Provider.LOCAL, true);
 
-      var response = cli.complete("what's the work history of google employees?");
-      System.out.println("=========== " + provider + " ===========");
-      System.out.println(response);
-    }
+//    for (var provider : List.of(Provider.OPEN_AI, Provider.ANYSCALE)) {
+//      var cli = LangChainClient.builder(provider, Library.LANG_CHAIN4J)
+//          .tools(List.of(new LangChainCompanyInfo()))
+//          .build();
+//
+//      var response = cli.complete("I'm interested in the work history of people that work at Uber");
+//      System.out.println("=========== " + provider + " ===========");
+//      System.out.println(response);
+//    }
   }
 }
