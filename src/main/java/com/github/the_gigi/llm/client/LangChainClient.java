@@ -5,7 +5,6 @@ import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
 
@@ -29,7 +28,7 @@ public class LangChainClient implements LLMClient {
       String baseUrl,
       String apiKey,
       String model,
-      @NotNull List<Object> tools) {
+      List<Object> tools) {
 
     this.defaultBaseUrl = baseUrl;
     this.defaultApiKey = apiKey;

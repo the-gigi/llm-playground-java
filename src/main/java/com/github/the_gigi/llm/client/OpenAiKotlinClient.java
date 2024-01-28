@@ -8,7 +8,6 @@ import com.aallam.openai.client.OpenAI;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public class OpenAiKotlinClient implements LLMClient {
 
@@ -25,11 +24,15 @@ public class OpenAiKotlinClient implements LLMClient {
   public OpenAiKotlinClient(String baseUrl,
       String apiKey,
       String model,
-      @NotNull List<Object> tools)
+      List<Object> tools)
   {
     this.client = createOpenAiKotlinClient(baseUrl, apiKey);
     this.model = model;
-    this.tools = tools.stream().map(t -> (FunctionToolCallData) t).toList();
+    if (tools == null) {
+      this.tools = List.of();
+    } else {
+      this.tools = tools.stream().map(t -> (FunctionToolCallData) t).toList();
+    }
   }
 
   @Override

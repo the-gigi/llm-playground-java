@@ -1,5 +1,6 @@
 package com.github.the_gigi.llm.playground;
 
+import static com.github.the_gigi.common.Constants.*;
 import static com.github.the_gigi.llm.playground.Functions.getSimpleOpenAiTools;
 import static com.github.the_gigi.llm.playground.FunctionsKt.getOpenAiKotlinTools;
 
@@ -17,16 +18,6 @@ import com.github.the_gigi.llm.client.LLMClient;
 
 
 public class Main {
-
-
-  private static final String OPEN_AI_BASE_URL = "https://api.openai.com/";
-  private static final String ANYSCALE_BASE_URL = "https://api.endpoints.anyscale.com";
-
-  private static final String LOCAL_BASE_URL = "http://localhost:5000";
-
-  private static final String DEFAULT_ANYSCALE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1";
-
-  private static final String DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
 
 
   static private OpenAiClient createRealOpenAiClient() {

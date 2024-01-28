@@ -18,7 +18,6 @@ import io.github.sashirestela.openai.function.FunctionExecutor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 public class SimpleOpenAiClient implements LLMClient {
 
@@ -35,13 +34,18 @@ public class SimpleOpenAiClient implements LLMClient {
       String baseUrl,
       String apiKey,
       String model,
-      @NotNull List<Object> tools) {
+      List<Object> tools) {
     this.openai = SimpleOpenAI.builder()
         .urlBase(baseUrl)
         .apiKey(apiKey)
         .build();
     this.model = model;
-    this.functions = tools.stream().map(f -> (FunctionInfo) f).toList();
+
+    if (tools == null) {
+      this.functions = List.of();
+    } else {
+      this.functions = tools.stream().map(t -> (FunctionInfo) t).toList();
+    }
   }
 
   @Override
