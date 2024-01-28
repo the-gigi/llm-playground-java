@@ -1,4 +1,4 @@
-package com.github.the_gigi.open_ai_client;
+package com.github.the_gigi.openai.client;
 
 import static com.theokanning.openai.service.OpenAiService.defaultClient;
 import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;

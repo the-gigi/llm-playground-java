@@ -1,4 +1,4 @@
-package com.github.the_gigi.llm_playground
+package com.github.the_gigi.llm.playground
 
 import com.aallam.openai.api.chat.ToolCall
 import kotlinx.serialization.encodeToString

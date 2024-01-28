@@ -1,4 +1,4 @@
-package com.github.the_gigi.llm_playground;
+package com.github.the_gigi.llm.playground;
 
 import java.util.List;
 

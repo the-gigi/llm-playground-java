@@ -1,12 +1,14 @@
-package com.github.the_gigi.llm_playground;
+package com.github.the_gigi.llm.playground;
 
-
-import static com.github.the_gigi.llm_playground.TextUtil.breakStringIntoLines;
+import com.github.the_gigi.llm.client.LLMClient;
+import static com.github.the_gigi.llm.playground.TextUtil.breakStringIntoLines;
 
 import java.util.List;
 import java.util.Scanner;
 
+
 public class BaseChat {
+
   private final LLMClient client;
 
   private final Scanner scanner;
@@ -17,6 +19,10 @@ public class BaseChat {
     this.client = client;
     this.scanner = new Scanner(System.in);
     this.model = defaultModel;
+  }
+
+  public LLMClient getClient() {
+    return this.client;
   }
 
   private String getUserInput() {
@@ -48,12 +54,12 @@ public class BaseChat {
   }
 
   public void start() {
-    if (this.model.isEmpty()) {
-      var models = this.client.listModels();
-      if (!models.isEmpty()) {
-        this.model = chooseModel(models);
-      }
-    }
+//    if (this.model.isEmpty()) {
+//      var models = this.client.listModels();
+//      if (!models.isEmpty()) {
+//        this.model = chooseModel(models);
+//      }
+//    }
 
     // Run in a loop until user says "bye"
     while (true) {
@@ -64,7 +70,7 @@ public class BaseChat {
         break;
       }
 
-      var response = this.client.complete(prompt, this.model);
+      var response = this.client.complete(prompt);
 
       System.out.println("----- response -----");
       System.out.println(breakStringIntoLines(response, 80));

@@ -1,7 +1,8 @@
-package com.github.the_gigi.llm_playground;
+package com.github.the_gigi.llm.playground;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import dev.langchain4j.agent.tool.Tool;
 import io.github.sashirestela.openai.function.Functional;
 import java.util.List;
 import kotlinx.serialization.Serializable;
@@ -19,6 +20,14 @@ class CompanyInfoRequest implements Functional {
   }
 }
 
+class LangChainCompanyInfo {
+  @Tool("Calculates the length of a string")
+  Functions.CompanyInfoResponse getCompanyInfo(String companyName) {
+    var r = new CompanyInfoRequest();
+    r.name = companyName;
+    return Functions.getCompanyInfo(r);
+  }
+}
 
 public class Functions {
 
@@ -34,6 +43,7 @@ public class Functions {
   public record CompanyInfoResponse(String name, List<EmployeeInfo> employees) {
 
   }
+
 
   public static CompanyInfoResponse getCompanyInfo(CompanyInfoRequest request) {
     var employees = List.of(
@@ -55,4 +65,9 @@ public class Functions {
     );
   }
 }
+
+
+//public static List<Object> getFunctionsData() {
+//  return List.of(new LangChainCompanyInfo());
+//}
 

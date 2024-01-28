@@ -1,4 +1,4 @@
-package com.github.the_gigi.llm_playground;
+package com.github.the_gigi.llm.playground;
 
 public class TextUtil {
   public static String breakStringIntoLines(String input, int maxLineLength) {
