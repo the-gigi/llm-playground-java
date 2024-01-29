@@ -11,7 +11,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class OpenAiClientBuilder {
+public class OpenAiJavaClientBuilder {
 
   private static final String DEFAULT_BASE_URL = "https://api.openai.com/";
   private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
@@ -22,27 +22,27 @@ public class OpenAiClientBuilder {
   private Duration timeout = DEFAULT_TIMEOUT;
   private String defaultModel;
 
-  public OpenAiClientBuilder(String token) {
+  public OpenAiJavaClientBuilder(String token) {
     this.token = token;
   }
 
-  public OpenAiClientBuilder baseUrl(String base_url) {
+  public OpenAiJavaClientBuilder baseUrl(String base_url) {
     this.base_url = base_url;
     return this;
   }
 
-  public OpenAiClientBuilder timeout(Duration timeout) {
+  public OpenAiJavaClientBuilder timeout(Duration timeout) {
     this.timeout = timeout;
     return this;
   }
 
-  public OpenAiClientBuilder defaultModel(String model) {
+  public OpenAiJavaClientBuilder defaultModel(String model) {
     this.defaultModel = model;
     return this;
   }
 
 
-  public OpenAiClient build() {
+  public OpenAiJavaClient build() {
     var client = defaultClient(token, timeout);
     var retrofit = new Retrofit.Builder()
         .baseUrl(base_url)
@@ -53,6 +53,6 @@ public class OpenAiClientBuilder {
 
     var api = retrofit.create(OpenAiApi.class);
     var service = new OpenAiService(api);
-    return new OpenAiClientImpl(service, this.defaultModel);
+    return new OpenAiJavaClientImpl(service, this.defaultModel);
   }
 }

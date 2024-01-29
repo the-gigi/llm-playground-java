@@ -5,8 +5,8 @@ import static com.github.the_gigi.llm.client.OpenAiClientHelperKt.getCompletionR
 import static com.github.the_gigi.llm.client.OpenAiClientHelperKt.getModels;
 
 import com.aallam.openai.client.OpenAI;
-import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
-import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
+import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
+import com.github.the_gigi.llm.client.LLMClientBuilder.LLMProvider;
 import com.github.the_gigi.llm.domain.CompletionRequest;
 import com.github.the_gigi.llm.domain.LLMClient;
 import java.util.List;
@@ -19,7 +19,7 @@ public class OpenAiKotlinClient implements LLMClient {
 
   private final List<FunctionToolCallData> tools;
 
-  public static LLMClientBuilder builder(Provider provider, Library library) {
+  public static LLMClientBuilder builder(LLMProvider provider, LLMClientLibrary library) {
     return new LLMClientBuilder(provider, library);
   }
 

@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAIConfig
 import com.aallam.openai.client.OpenAIHost
-import com.github.the_gigi.llm.playground.execute
+import com.github.the_gigi.llm.functions.execute
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

@@ -1,8 +1,11 @@
 package com.github.the_gigi.llm.client;
 
-import static com.github.the_gigi.llm.functions.Functions.getLangChainTools;
+import static com.github.the_gigi.llm.common.Constants.DEFAULT_ANYSCALE_MODEL;
+import static com.github.the_gigi.llm.common.Constants.DEFAULT_OPENAI_MODEL;
 import static com.github.the_gigi.llm.functions.Functions.getSimpleOpenAiTools;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
 import com.github.the_gigi.llm.client.LLMClientBuilder.LLMProvider;
@@ -12,27 +15,28 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class LangChainClientTest {
+class SimpleOpenAiClientTest {
   LLMClient openAiClient;
   LLMClient anyscaleClient;
   @BeforeEach
   void setUp() {
-    var tools = getLangChainTools();
-    this.openAiClient = new LLMClientBuilder(LLMProvider.OPEN_AI, LLMClientLibrary.LANG_CHAIN4J)
+    var tools = getSimpleOpenAiTools().stream().map(t -> (Object) t).toList();
+    this.openAiClient = new LLMClientBuilder(LLMProvider.OPEN_AI, LLMClientLibrary.SIMPLE_OPENAI)
         .tools(tools)
         .build();
     assertNotNull(this.openAiClient);
 
-    this.anyscaleClient = new LLMClientBuilder(LLMProvider.ANYSCALE, LLMClientLibrary.LANG_CHAIN4J)
+    this.anyscaleClient = new LLMClientBuilder(LLMProvider.ANYSCALE, LLMClientLibrary.SIMPLE_OPENAI)
         .tools(tools)
         .build();
+
     assertNotNull(this.anyscaleClient);
   }
   @Test
   void builder() {
-    assertNotNull(LangChainClient.builder(LLMProvider.OPEN_AI));
-    assertNotNull(LangChainClient.builder(LLMProvider.ANYSCALE));
-    assertNotNull(LangChainClient.builder(LLMProvider.LOCAL));
+    assertNotNull(SimpleOpenAiClient.builder(LLMProvider.OPEN_AI));
+    assertNotNull(SimpleOpenAiClient.builder(LLMProvider.ANYSCALE));
+    assertNotNull(SimpleOpenAiClient.builder(LLMProvider.LOCAL));
   }
 
   @Test
@@ -51,11 +55,11 @@ class LangChainClientTest {
   }
 
   @Test
-  void completeWithCompletionRequest() {
+  void completeWithTools() {
     var employees = List.of("John", "Jack", "Jill", "Jane");
     var r = CompletionRequest.builder()
-        .prompt("I'm interested in the work history of people that work at Uber")
-        .tools(getLangChainTools())
+        .prompt("What's the work history of people that work at Uber?")
+        .tools(getSimpleOpenAiTools().stream().map(t -> (Object) t).toList())
         .build();
 
     var openAiResult = this.openAiClient.complete(r);
@@ -71,6 +75,14 @@ class LangChainClientTest {
 
   @Test
   void listModels() {
-    // LangChain4J does not support listing models
+    var models = this.openAiClient.listModels();
+    assertNotNull(models);
+    assertFalse(models.isEmpty());
+    assertTrue(models.contains(DEFAULT_OPENAI_MODEL));
+
+    models = this.anyscaleClient.listModels();
+    assertNotNull(models);
+    assertFalse(models.isEmpty());
+    assertTrue(models.contains(DEFAULT_ANYSCALE_MODEL));
   }
 }

@@ -16,30 +16,30 @@ public class LLMClientBuilder {
 
   private static final String DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
 
-  public enum Provider {
+  public enum LLMProvider {
     OPEN_AI,
     ANYSCALE,
 
     LOCAL
   }
 
-  public enum Library {
+  public enum LLMClientLibrary {
     OPENAI_JAVA,
     OPENAI_KOTLIN,
     LANG_CHAIN4J,
     SIMPLE_OPENAI
   }
 
-  private final Provider provider;
+  private final LLMProvider provider;
 
-  private final Library library;
+  private final LLMClientLibrary library;
   private String apiKey = "";
   private String baseUrl = "";
   private String model = "";
 
   private List<Object> tools;
 
-  public LLMClientBuilder (Provider provider, Library library) {
+  public LLMClientBuilder (LLMProvider provider, LLMClientLibrary library) {
     this.provider = provider;
     this.library = library;
   }
@@ -98,13 +98,13 @@ public class LLMClientBuilder {
       switch (this.provider) {
         case OPEN_AI:
           this.baseUrl = OPENAI_BASE_URL;
-          if (this.library == Library.LANG_CHAIN4J || this.library == Library.OPENAI_KOTLIN) {
+          if (this.library == LLMClientLibrary.LANG_CHAIN4J || this.library == LLMClientLibrary.OPENAI_KOTLIN) {
             this.baseUrl += "v1/";
           }
           break;
         case ANYSCALE:
           this.baseUrl = ANYSCALE_BASE_URL;
-          if (this.library == Library.LANG_CHAIN4J || this.library == Library.OPENAI_KOTLIN) {
+          if (this.library == LLMClientLibrary.LANG_CHAIN4J || this.library == LLMClientLibrary.OPENAI_KOTLIN) {
             this.baseUrl += "/v1/";
           }
           break;
@@ -115,8 +115,8 @@ public class LLMClientBuilder {
 
     var tools = Optional.ofNullable(this.tools).orElse(List.of());
     return switch (this.library) {
-//      case OPENAI_JAVA:
-//        return new OpenAiJavaClient(this.baseUrl, this.apiKey, this.model);
+      case OPENAI_JAVA ->
+          new OpenAiJavaClient(this.baseUrl, this.apiKey, this.model, tools);
       case OPENAI_KOTLIN ->
           new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model, tools);
       case LANG_CHAIN4J ->

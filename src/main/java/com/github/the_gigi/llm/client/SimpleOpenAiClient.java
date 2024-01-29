@@ -1,8 +1,8 @@
 package com.github.the_gigi.llm.client;
 
 
-import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
-import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
+import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
+import com.github.the_gigi.llm.client.LLMClientBuilder.LLMProvider;
 import com.github.the_gigi.llm.domain.CompletionRequest;
 import com.github.the_gigi.llm.domain.LLMClient;
 
@@ -21,20 +21,20 @@ import java.util.List;
 import java.util.Optional;
 
 
-
-
 public class SimpleOpenAiClient implements LLMClient {
 
-  public record FunctionInfo(String name, String description, Class<? extends Functional> funcClass) {
+  public record FunctionInfo(String name, String description,
+                             Class<? extends Functional> funcClass) {
 
   }
+
   private final SimpleOpenAI openai;
 
   private final String model;
   private final List<FunctionInfo> functions;
 
-  public static LLMClientBuilder builder(Provider provider) {
-    return new LLMClientBuilder(provider, Library.SIMPLE_OPENAI);
+  public static LLMClientBuilder builder(LLMProvider provider) {
+    return new LLMClientBuilder(provider, LLMClientLibrary.SIMPLE_OPENAI);
   }
 
   public SimpleOpenAiClient(

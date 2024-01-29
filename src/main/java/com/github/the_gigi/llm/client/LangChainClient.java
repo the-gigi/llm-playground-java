@@ -6,8 +6,8 @@ import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.service.AiServices;
 import java.util.List;
-import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
-import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
+import com.github.the_gigi.llm.client.LLMClientBuilder.LLMProvider;
+import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
 import java.util.Optional;
 
 /**
@@ -40,8 +40,8 @@ public class LangChainClient implements LLMClient {
    * @param provider The provider of the LangChain client.
    * @return A new instance of LLMClientBuilder configured with LangChain4J library.
    */
-  public static LLMClientBuilder builder(Provider provider) {
-    return new LLMClientBuilder(provider, Library.LANG_CHAIN4J);
+  public static LLMClientBuilder builder(LLMProvider provider) {
+    return new LLMClientBuilder(provider, LLMClientLibrary.LANG_CHAIN4J);
   }
 
   /**
@@ -93,13 +93,13 @@ public class LangChainClient implements LLMClient {
   @Override
   public String complete(CompletionRequest r) {
     var client = OpenAiChatModel.builder()
-        .apiKey(r.apiKey().isEmpty() ? this.defaultApiKey : r.apiKey())
-        .baseUrl(r.baseUrl().isEmpty() ? this.defaultBaseUrl : r.baseUrl())
-        .modelName(r.model().isEmpty() ? this.defaultModel : r.model())
+        .apiKey(Optional.ofNullable(r.apiKey()).orElse(this.defaultApiKey))
+        .baseUrl(Optional.ofNullable(r.baseUrl()).orElse(this.defaultBaseUrl))
+        .modelName(Optional.ofNullable(r.model()).orElse(this.defaultModel))
         .build();
     var assistant = AiServices.builder(Assistant.class)
         .chatLanguageModel(client)
-        .tools(r.tools().isEmpty() ? this.defaultTools : r.tools())
+        .tools(Optional.ofNullable(r.tools()).orElse(this.defaultTools))
         .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
         .build();
 

@@ -1,4 +1,4 @@
-package com.github.the_gigi.llm.playground
+package com.github.the_gigi.llm.functions
 
 import com.aallam.openai.api.chat.ToolCall
 import com.github.the_gigi.llm.client.FunctionToolCallArgumentData

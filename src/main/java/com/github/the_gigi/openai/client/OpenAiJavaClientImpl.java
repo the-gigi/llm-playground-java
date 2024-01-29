@@ -32,12 +32,12 @@ import io.reactivex.Flowable;
 import java.util.List;
 
 
-public class OpenAiClientImpl implements OpenAiClient {
+public class OpenAiJavaClientImpl implements OpenAiJavaClient {
 
   private final OpenAiService service;
   private final String defaultModel;
 
-  public OpenAiClientImpl(OpenAiService service, String defaultModel) {
+  public OpenAiJavaClientImpl(OpenAiService service, String defaultModel) {
     this.service = service;
     this.defaultModel = defaultModel;
   }

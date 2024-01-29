@@ -32,7 +32,7 @@ import io.reactivex.Flowable;
 
 import java.util.List;
 
-public interface OpenAiClient {
+public interface OpenAiJavaClient {
   String getDefaultModel();
 
   List<Model> listModels();

@@ -1,34 +1,14 @@
-package com.github.the_gigi.llm.playground;
+package com.github.the_gigi.llm.functions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.github.the_gigi.llm.client.SimpleOpenAiClient.FunctionInfo;
+import com.theokanning.openai.completion.chat.ChatFunction;
 import dev.langchain4j.agent.tool.Tool;
 import io.github.sashirestela.openai.function.Functional;
 import java.util.List;
 import kotlinx.serialization.Serializable;
 
-
-class CompanyInfoRequest implements Functional {
-
-  @JsonPropertyDescription("Name of company, for example: 'Microsoft' or 'Netflix")
-  @JsonProperty(required = true)
-  public String name;
-
-  @Override
-  public Object execute() {
-    return Functions.getCompanyInfo(this);
-  }
-}
-
-class LangChainCompanyInfo {
-  @Tool("Calculates the length of a string")
-  Functions.CompanyInfoResponse getCompanyInfo(String companyName) {
-    var r = new CompanyInfoRequest();
-    r.name = companyName;
-    return Functions.getCompanyInfo(r);
-  }
-}
 
 public class Functions {
 
@@ -62,6 +42,21 @@ public class Functions {
             "Get information about a company",
             CompanyInfoRequest.class)
     );
+  }
+
+  public static List<ChatFunction> getOpenAiJavaTools() {
+
+    var function = ChatFunction.builder()
+        .name("get_company_info")
+        .description("Get work history of all employees of a company")
+        .executor(CompanyInfoRequest.class, Functions::getCompanyInfo).build();
+
+
+    return List.of(function);
+  }
+
+  public static List<Object> getLangChainTools() {
+    return List.of(new LangChainCompanyInfo());
   }
 }
 

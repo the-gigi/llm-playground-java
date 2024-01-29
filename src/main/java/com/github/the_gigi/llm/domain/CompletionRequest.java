@@ -30,7 +30,7 @@ public record CompletionRequest(
     /*
      * The top-p parameter for controlling the diversity of the output.
      */
-    Integer topP,
+    Double topP,
     /*
      * The number of completions to generate.
      */
@@ -54,7 +54,7 @@ public record CompletionRequest(
     private List<Object> tools;
     private Integer maxTokens;
     private Double temperature;
-    private Integer topP;
+    private Double topP;
     private Integer n;
     private String model;
     private String prompt;
@@ -120,7 +120,7 @@ public record CompletionRequest(
      * @param topP The top-p parameter for controlling the diversity of the output.
      * @return The builder instance.
      */
-    public Builder topP(Integer topP) {
+    public Builder topP(Double topP) {
       this.topP = topP;
       return this;
     }
