@@ -10,7 +10,7 @@ import java.util.List;
 public class SimpleOpenAiChat extends BaseChat {
 
   public SimpleOpenAiChat(Provider provider, List<Object> tools) {
-    super(SimpleOpenAiClient.builder(provider, Library.SIMPLE_OPENAI)
+    super(SimpleOpenAiClient.builder(provider)
         .tools(tools)
         .build(), "");
   }

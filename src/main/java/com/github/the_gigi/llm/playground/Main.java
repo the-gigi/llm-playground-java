@@ -120,7 +120,7 @@ public class Main {
 
     for (var provider : List.of(Provider.OPEN_AI, Provider.ANYSCALE)) {
       System.out.println("=========== " + provider + " ===========");
-      var cli = SimpleOpenAiClient.builder(provider, Library.SIMPLE_OPENAI)
+      var cli = SimpleOpenAiClient.builder(provider)
           .tools(getSimpleOpenAiTools().stream().map(f -> (Object) f).toList())
           .build();
 

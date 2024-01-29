@@ -33,8 +33,8 @@ public class SimpleOpenAiClient implements LLMClient {
   private final String model;
   private final List<FunctionInfo> functions;
 
-  public static LLMClientBuilder builder(Provider provider, Library library) {
-    return new LLMClientBuilder(provider, library);
+  public static LLMClientBuilder builder(Provider provider) {
+    return new LLMClientBuilder(provider, Library.SIMPLE_OPENAI);
   }
 
   public SimpleOpenAiClient(
@@ -106,7 +106,7 @@ public class SimpleOpenAiClient implements LLMClient {
   @Override
   public List<String> listModels() {
     var models = new ArrayList<String>();
-    var modelsResponse = this.openai.models().getList().whenComplete((r, e) -> {
+    this.openai.models().getList().whenComplete((r, e) -> {
       if (e != null) {
         System.out.println("Error getting models: " + e.getMessage());
       }

@@ -30,7 +30,7 @@ class LangChainClientTest {
   @Test
   void completeWithJustPrompt() {
     var expected = "Once upon a time";
-    var prompt = "Start with this and return a complete sentence: `" + expected + "`";
+    var prompt = "complete the sentence: `" + expected + "`. Make sure to include the beginning phrase";
     var result = this.openAiClient.complete(prompt);
     assertNotNull(result);
     assertFalse(result.isEmpty());
