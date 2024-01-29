@@ -4,7 +4,6 @@ package com.github.the_gigi.llm.client;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;
 import com.github.the_gigi.llm.client.LLMClientBuilder.Provider;
 import com.github.the_gigi.llm.domain.CompletionRequest;
-import com.github.the_gigi.llm.playground.Functions.FunctionInfo;
 import com.github.the_gigi.llm.domain.LLMClient;
 
 import io.github.sashirestela.openai.SimpleOpenAI;
@@ -16,12 +15,19 @@ import io.github.sashirestela.openai.domain.chat.message.ChatMsgUser;
 import io.github.sashirestela.openai.domain.chat.tool.ChatFunction;
 import io.github.sashirestela.openai.domain.model.ModelResponse;
 import io.github.sashirestela.openai.function.FunctionExecutor;
+import io.github.sashirestela.openai.function.Functional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+
+
 public class SimpleOpenAiClient implements LLMClient {
 
+  public record FunctionInfo(String name, String description, Class<? extends Functional> funcClass) {
+
+  }
   private final SimpleOpenAI openai;
 
   private final String model;

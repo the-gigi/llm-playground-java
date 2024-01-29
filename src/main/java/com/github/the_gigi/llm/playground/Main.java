@@ -1,6 +1,6 @@
 package com.github.the_gigi.llm.playground;
 
-import static com.github.the_gigi.common.Constants.*;
+import static com.github.the_gigi.llm.common.Constants.*;
 import static com.github.the_gigi.llm.playground.Functions.getSimpleOpenAiTools;
 import static com.github.the_gigi.llm.playground.FunctionsKt.getOpenAiKotlinTools;
 

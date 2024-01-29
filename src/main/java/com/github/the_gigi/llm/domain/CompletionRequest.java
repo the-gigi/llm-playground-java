@@ -6,45 +6,43 @@ import java.util.List;
  * Represents a completion request for language models.
  */
 public record CompletionRequest(
-    /**
+    /*
      * The base URL of the API.
      */
     String baseUrl,
-    /**
+    /*
      * The API key for authentication.
      */
     String apiKey,
 
-    /**
+    /*
      * The list of tools to be used.
      */
     List<Object> tools,
-    /**
+    /*
      * The maximum number of tokens in the generated output.
      */
     Integer maxTokens,
-    /**
+    /*
      * The temperature parameter for randomness in the output.
      */
     Double temperature,
-    /**
+    /*
      * The top-p parameter for controlling the diversity of the output.
      */
     Integer topP,
-    /**
+    /*
      * The number of completions to generate.
      */
     Integer n,
-    /**
+    /*
      * The model to use for completion.
      */
     String model,
-    /**
+    /*
      * The prompt text for completion.
      */
-    String prompt
-) {
-
+    String prompt) {
   /**
    * Builder class for constructing instances of {@link CompletionRequest}.
    */
@@ -53,7 +51,7 @@ public record CompletionRequest(
     private String baseUrl;
     private String apiKey;
 
-    private List<Object> tools = List.of();
+    private List<Object> tools;
     private Integer maxTokens;
     private Double temperature;
     private Integer topP;
@@ -169,7 +167,7 @@ public record CompletionRequest(
       return new CompletionRequest(
           baseUrl,
           apiKey,
-          tools,
+          tools == null ? List.of() : tools,
           maxTokens,
           temperature,
           topP,

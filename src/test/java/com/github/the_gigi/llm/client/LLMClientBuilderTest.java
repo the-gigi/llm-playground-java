@@ -1,6 +1,6 @@
 package com.github.the_gigi.llm.client;
 
-import static com.github.the_gigi.common.Constants.*;
+import static com.github.the_gigi.llm.common.Constants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.the_gigi.llm.client.LLMClientBuilder.Library;

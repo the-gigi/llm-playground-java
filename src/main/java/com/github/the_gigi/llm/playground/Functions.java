@@ -2,6 +2,7 @@ package com.github.the_gigi.llm.playground;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.github.the_gigi.llm.client.SimpleOpenAiClient.FunctionInfo;
 import dev.langchain4j.agent.tool.Tool;
 import io.github.sashirestela.openai.function.Functional;
 import java.util.List;
@@ -31,9 +32,7 @@ class LangChainCompanyInfo {
 
 public class Functions {
 
-  public record FunctionInfo(String name, String description, Class<? extends Functional> funcClass) {
 
-  }
 
   public record EmployeeInfo(String name, List<String> previousCompanies) {
 
