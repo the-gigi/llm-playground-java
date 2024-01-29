@@ -43,7 +43,7 @@ public class SimpleOpenAiClient implements LLMClient {
       String model,
       List<Object> tools) {
     this.openai = SimpleOpenAI.builder()
-        .urlBase(baseUrl)
+        .baseUrl(baseUrl)
         .apiKey(apiKey)
         .build();
     this.model = model;

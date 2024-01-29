@@ -19,7 +19,6 @@ public class LLMClientBuilder {
   public enum LLMProvider {
     OPEN_AI,
     ANYSCALE,
-
     LOCAL
   }
 

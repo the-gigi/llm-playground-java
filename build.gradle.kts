@@ -15,22 +15,22 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.openai.api)
-    implementation(libs.openai.client)
-    implementation(libs.openai.service)
+    implementation(libs.guava)
+    implementation(libs.jackson.databind)
+    implementation(libs.langchain4j)
+    implementation(libs.langchain4j.open.ai)
+    implementation(libs.okhttp)
+    implementation(libs.openai.java.api)
+    implementation(libs.openai.java.client)
+    implementation(libs.openai.java.service)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.jackson)
-    implementation(libs.okhttp)
-    implementation(libs.jackson.databind)
-    //implementation(libs.openai_kotlin.openai.client)
-    implementation("com.aallam.openai:openai-client:3.6.3")
-    implementation("io.ktor:ktor-client-okhttp:2.3.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    implementation("org.slf4j:slf4j-api:2.0.11") // SLF4J API
-    implementation("ch.qos.logback:logback-classic:1.4.14") // Logback implementation
-    implementation("io.github.sashirestela:simple-openai:1.3.0")
-    implementation("dev.langchain4j:langchain4j:0.25.0")
-    implementation("dev.langchain4j:langchain4j-open-ai:0.25.0")
+    implementation(libs.openai.kotlin.client)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.slf4j.api)
+    implementation(libs.logback.classic)
+    implementation(libs.simple.openai)
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
