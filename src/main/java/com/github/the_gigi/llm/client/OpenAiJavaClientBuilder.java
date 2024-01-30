@@ -1,4 +1,4 @@
-package com.github.the_gigi.openai.client;
+package com.github.the_gigi.llm.client;
 
 import static com.theokanning.openai.service.OpenAiService.defaultClient;
 import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;
@@ -41,8 +41,7 @@ public class OpenAiJavaClientBuilder {
     return this;
   }
 
-
-  public OpenAiJavaClient build() {
+  OpenAiJavaClientImpl build() {
     var client = defaultClient(token, timeout);
     var retrofit = new Retrofit.Builder()
         .baseUrl(base_url)

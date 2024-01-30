@@ -1,4 +1,4 @@
-package com.github.the_gigi.llm.functions
+package com.github.the_gigi.llm.examples.functions
 
 import com.aallam.openai.api.chat.ToolCall
 import com.github.the_gigi.llm.client.FunctionToolCallArgumentData
@@ -37,7 +37,7 @@ private fun getCompanyInfo(args: JsonObject): String {
     return json;
 }
 
-internal fun getOpenAiKotlinTools(): List<FunctionToolCallData> {
+internal fun getOpenAiKotlinTools(): List<Any> {
     return listOf(
             FunctionToolCallData(
                     functionName = "get_company_info",

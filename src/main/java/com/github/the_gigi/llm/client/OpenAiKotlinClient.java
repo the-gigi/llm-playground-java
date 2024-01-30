@@ -19,8 +19,8 @@ public class OpenAiKotlinClient implements LLMClient {
 
   private final List<FunctionToolCallData> tools;
 
-  public static LLMClientBuilder builder(LLMProvider provider, LLMClientLibrary library) {
-    return new LLMClientBuilder(provider, library);
+  public static LLMClientBuilder builder(LLMProvider provider) {
+    return new LLMClientBuilder(provider, LLMClientLibrary.OPENAI_KOTLIN);
   }
 
   public OpenAiKotlinClient(String baseUrl,

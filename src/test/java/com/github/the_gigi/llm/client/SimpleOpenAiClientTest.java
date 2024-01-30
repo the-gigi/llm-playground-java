@@ -2,7 +2,7 @@ package com.github.the_gigi.llm.client;
 
 import static com.github.the_gigi.llm.common.Constants.DEFAULT_ANYSCALE_MODEL;
 import static com.github.the_gigi.llm.common.Constants.DEFAULT_OPENAI_MODEL;
-import static com.github.the_gigi.llm.functions.Functions.getSimpleOpenAiTools;
+import static com.github.the_gigi.llm.examples.functions.Functions.getSimpleOpenAiTools;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,7 +20,7 @@ class SimpleOpenAiClientTest {
   LLMClient anyscaleClient;
   @BeforeEach
   void setUp() {
-    var tools = getSimpleOpenAiTools().stream().map(t -> (Object) t).toList();
+    var tools = getSimpleOpenAiTools();
     this.openAiClient = new LLMClientBuilder(LLMProvider.OPEN_AI, LLMClientLibrary.SIMPLE_OPENAI)
         .tools(tools)
         .build();
@@ -59,7 +59,7 @@ class SimpleOpenAiClientTest {
     var employees = List.of("John", "Jack", "Jill", "Jane");
     var r = CompletionRequest.builder()
         .prompt("What's the work history of people that work at Uber?")
-        .tools(getSimpleOpenAiTools().stream().map(t -> (Object) t).toList())
+        .tools(getSimpleOpenAiTools())
         .build();
 
     var openAiResult = this.openAiClient.complete(r);

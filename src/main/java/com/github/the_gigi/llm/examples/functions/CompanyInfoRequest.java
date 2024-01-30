@@ -1,4 +1,4 @@
-package com.github.the_gigi.llm.functions;
+package com.github.the_gigi.llm.examples.functions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;

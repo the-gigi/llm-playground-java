@@ -1,7 +1,8 @@
-package com.github.the_gigi.llm.playground;
+package com.github.the_gigi.llm.examples.shared;
 
-public class TextUtil {
-  public static String breakStringIntoLines(String input, int maxLineLength) {
+class TextUtil {
+
+  static String breakStringIntoLines(String input) {
     StringBuilder result = new StringBuilder();
     String[] paragraphs = input.split("\n");
 
@@ -11,7 +12,7 @@ public class TextUtil {
 
       for (String word : words) {
         // Check if adding the next word exceeds the max line length
-        if (line.length() + word.length() + 1 > maxLineLength) {
+        if (line.length() + word.length() + 1 > 80) {
           // Add the current line to the result and start a new line
           result.append(line).append("\n");
           line = new StringBuilder();

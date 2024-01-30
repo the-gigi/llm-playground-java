@@ -1,13 +1,15 @@
-package com.github.the_gigi.llm.playground;
+package com.github.the_gigi.llm.examples.shared;
+
+import static com.github.the_gigi.llm.examples.shared.TextUtil.breakStringIntoLines;
 
 import com.github.the_gigi.llm.domain.LLMClient;
-import static com.github.the_gigi.llm.playground.TextUtil.breakStringIntoLines;
+
 
 import java.util.List;
 import java.util.Scanner;
 
 
-public class BaseChat {
+public class Chat {
 
   private final LLMClient client;
 
@@ -15,7 +17,7 @@ public class BaseChat {
 
   protected String model;
 
-  public BaseChat(LLMClient client, String defaultModel) {
+  public Chat(LLMClient client, String defaultModel) {
     this.client = client;
     this.scanner = new Scanner(System.in);
     this.model = defaultModel;
@@ -73,7 +75,8 @@ public class BaseChat {
       var response = this.client.complete(prompt);
 
       System.out.println("----- response -----");
-      System.out.println(breakStringIntoLines(response, 80));
+      System.out.println(breakStringIntoLines(response));
     }
   }
 }
+

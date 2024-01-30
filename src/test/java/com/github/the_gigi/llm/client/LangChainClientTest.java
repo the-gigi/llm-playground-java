@@ -1,6 +1,6 @@
 package com.github.the_gigi.llm.client;
 
-import static com.github.the_gigi.llm.functions.Functions.getLangChainTools;
+import static com.github.the_gigi.llm.examples.functions.Functions.getLangChainTools;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
