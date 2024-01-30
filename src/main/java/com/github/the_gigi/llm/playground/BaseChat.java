@@ -54,7 +54,7 @@ public class BaseChat {
   }
 
   public void start() {
-//    if (this.model.isEmpty()) {
+//    if (this.model == null) {
 //      var models = this.client.listModels();
 //      if (!models.isEmpty()) {
 //        this.model = chooseModel(models);

@@ -18,7 +18,6 @@ class LLMClientBuilderTest {
 
     var models = client.listModels();
     assertNotNull(models);
-    assertFalse(models.isEmpty());
     assertTrue(models.contains(DEFAULT_OPENAI_MODEL));
   }
 
@@ -30,7 +29,6 @@ class LLMClientBuilderTest {
 
     var models = client.listModels();
     assertNotNull(models);
-    assertFalse(models.isEmpty());
     assertTrue(models.contains(DEFAULT_ANYSCALE_MODEL));
   }
 }

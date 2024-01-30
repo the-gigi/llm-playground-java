@@ -2,6 +2,7 @@ package com.github.the_gigi.llm.client;
 
 
 import com.github.the_gigi.llm.domain.LLMClient;
+import com.google.common.base.Strings;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +66,7 @@ public class LLMClientBuilder {
 
   public LLMClient build() {
     // Set API key if not provided
-    if (this.apiKey.isEmpty()) {
+    if (Strings.isNullOrEmpty(this.apiKey)) {
       switch (this.provider) {
         case OPEN_AI:
           this.apiKey = System.getenv("OPENAI_API_KEY");
@@ -79,7 +80,7 @@ public class LLMClientBuilder {
     }
 
     // Set API key if not provided
-    if (this.model.isEmpty()) {
+    if (Strings.isNullOrEmpty(this.model)) {
       switch (this.provider) {
         case OPEN_AI:
           this.model = DEFAULT_OPENAI_MODEL;
@@ -93,7 +94,7 @@ public class LLMClientBuilder {
     }
 
     // Set base URL if not provided
-    if (this.baseUrl.isEmpty()) {
+    if (Strings.isNullOrEmpty(this.baseUrl)) {
       switch (this.provider) {
         case OPEN_AI:
           this.baseUrl = OPENAI_BASE_URL;
