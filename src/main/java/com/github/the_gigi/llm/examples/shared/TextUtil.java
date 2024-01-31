@@ -1,13 +1,13 @@
 package com.github.the_gigi.llm.examples.shared;
 
-class TextUtil {
+public class TextUtil {
 
-  static String breakStringIntoLines(String input) {
+  public static String breakStringIntoLines(String input) {
     StringBuilder result = new StringBuilder();
-    String[] paragraphs = input.split("\n");
+    String[] paragraphs = input.split("\n", -1);
 
     for (String paragraph : paragraphs) {
-      String[] words = paragraph.split(" ");
+      String[] words = paragraph.split(" ", -1);
       var line = new StringBuilder();
 
       for (String word : words) {

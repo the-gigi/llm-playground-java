@@ -44,10 +44,11 @@ public class FullFledgedCompletionExample {
     var cli = SimpleOpenAiClient.builder(provider)
         .tools(tools)
         .build();
-    var prompt = "You are a story teller that writes your stories in lines no longer than "
-        + "80 characters. If you need to call functions, call each function only once"
-        + "with the same arguments. Now,tell me a story about dog a helping a mouse chased by "
-        + "an eagle.";
+    var prompt = """
+      You are a story teller that writes your stories in lines no longer than
+      80 characters. If you need to call functions, call each function only once
+      with the same arguments. Now,tell me a story about dog a helping a mouse chased by
+      an eagle.""";
     var r = CompletionRequest.builder()
         .prompt(prompt)
         .model(model)

@@ -5,6 +5,7 @@ import static com.github.the_gigi.llm.examples.shared.TextUtil.breakStringIntoLi
 import com.github.the_gigi.llm.domain.LLMClient;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class Chat {
 
   public Chat(LLMClient client, String defaultModel) {
     this.client = client;
-    this.scanner = new Scanner(System.in);
+    this.scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     this.model = defaultModel;
   }
 
