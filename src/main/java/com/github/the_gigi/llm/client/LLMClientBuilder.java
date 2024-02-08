@@ -15,12 +15,13 @@ public class LLMClientBuilder {
 
   private static final String DEFAULT_ANYSCALE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 
-  private static final String DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
+  private static final String DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo-1106";
 
   public enum LLMProvider {
     OPEN_AI,
     ANYSCALE,
-    LOCAL
+    LOCAL,
+    CUSTOM
   }
 
   public enum LLMClientLibrary {
@@ -39,7 +40,7 @@ public class LLMClientBuilder {
 
   private List<Object> tools;
 
-  public LLMClientBuilder (LLMProvider provider, LLMClientLibrary library) {
+  public LLMClientBuilder(LLMProvider provider, LLMClientLibrary library) {
     this.provider = provider;
     this.library = library;
   }
@@ -74,6 +75,8 @@ public class LLMClientBuilder {
         case ANYSCALE:
           this.apiKey = System.getenv("ANYSCALE_API_TOKEN");
           break;
+        case CUSTOM:
+          throw new IllegalArgumentException("API key must be provided for custom provider");
         default:
           throw new IllegalArgumentException("Unknown provider: " + provider);
       }
@@ -88,6 +91,8 @@ public class LLMClientBuilder {
         case ANYSCALE:
           this.model = DEFAULT_ANYSCALE_MODEL;
           break;
+        case CUSTOM:
+          throw new IllegalArgumentException("Model must be provided for custom provider");
         default:
           throw new IllegalArgumentException("Unknown provider: " + provider);
       }
@@ -98,16 +103,20 @@ public class LLMClientBuilder {
       switch (this.provider) {
         case OPEN_AI:
           this.baseUrl = OPENAI_BASE_URL;
-          if (this.library == LLMClientLibrary.LANG_CHAIN4J || this.library == LLMClientLibrary.OPENAI_KOTLIN) {
+          if (this.library == LLMClientLibrary.LANG_CHAIN4J
+              || this.library == LLMClientLibrary.OPENAI_KOTLIN) {
             this.baseUrl += "v1/";
           }
           break;
         case ANYSCALE:
           this.baseUrl = ANYSCALE_BASE_URL;
-          if (this.library == LLMClientLibrary.LANG_CHAIN4J || this.library == LLMClientLibrary.OPENAI_KOTLIN) {
+          if (this.library == LLMClientLibrary.LANG_CHAIN4J
+              || this.library == LLMClientLibrary.OPENAI_KOTLIN) {
             this.baseUrl += "/v1/";
           }
           break;
+        case CUSTOM:
+          throw new IllegalArgumentException("Base URL must be provided for custom provider");
         default:
           throw new IllegalArgumentException("Unknown provider: " + provider);
       }
@@ -115,14 +124,10 @@ public class LLMClientBuilder {
 
     var tools = Optional.ofNullable(this.tools).orElse(List.of());
     return switch (this.library) {
-      case OPENAI_JAVA ->
-          new OpenAiJavaClient(this.baseUrl, this.apiKey, this.model, tools);
-      case OPENAI_KOTLIN ->
-          new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model, tools);
-      case LANG_CHAIN4J ->
-          new LangChainClient(this.baseUrl, this.apiKey, this.model, tools);
-      case SIMPLE_OPENAI ->
-          new SimpleOpenAiClient(this.baseUrl, this.apiKey, this.model, tools);
+      case OPENAI_JAVA -> new OpenAiJavaClient(this.baseUrl, this.apiKey, this.model, tools);
+      case OPENAI_KOTLIN -> new OpenAiKotlinClient(this.baseUrl, this.apiKey, this.model, tools);
+      case LANG_CHAIN4J -> new LangChainClient(this.baseUrl, this.apiKey, this.model, tools);
+      case SIMPLE_OPENAI -> new SimpleOpenAiClient(this.baseUrl, this.apiKey, this.model, tools);
       default -> throw new IllegalArgumentException("Unknown library: " + library);
     };
   }

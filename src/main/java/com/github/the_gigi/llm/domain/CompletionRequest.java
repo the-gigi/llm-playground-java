@@ -42,7 +42,13 @@ public record CompletionRequest(
     /*
      * The prompt text for completion.
      */
-    String prompt) {
+    String prompt,
+
+    /*
+     * The response type for the completion.
+     */
+    ResponseFormat responseFormat
+) {
   /**
    * Builder class for constructing instances of {@link CompletionRequest}.
    */
@@ -58,6 +64,7 @@ public record CompletionRequest(
     private Integer n;
     private String model;
     private String prompt;
+    private ResponseFormat responseFormat = ResponseFormat.TEXT;
 
     /**
      * Sets the base URL of the API.
@@ -159,6 +166,17 @@ public record CompletionRequest(
     }
 
     /**
+     * Sets the response format for the completion.
+     *
+     * @param responseFormat The response format for the completion.
+     * @return The builder instance.
+     */
+    public Builder responseFormat(ResponseFormat responseFormat) {
+      this.responseFormat = responseFormat;
+      return this;
+    }
+
+    /**
      * Builds a new instance of {@link CompletionRequest} with the configured properties.
      *
      * @return A new instance of {@link CompletionRequest}.
@@ -173,7 +191,8 @@ public record CompletionRequest(
           topP,
           n,
           model,
-          prompt);
+          prompt,
+          responseFormat);
     }
   }
 

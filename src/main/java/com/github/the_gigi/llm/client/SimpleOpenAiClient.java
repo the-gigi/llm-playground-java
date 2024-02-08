@@ -6,8 +6,11 @@ import com.github.the_gigi.llm.client.LLMClientBuilder.LLMProvider;
 import com.github.the_gigi.llm.domain.CompletionRequest;
 import com.github.the_gigi.llm.domain.LLMClient;
 
+import com.github.the_gigi.llm.domain.ResponseFormat;
 import io.github.sashirestela.openai.SimpleOpenAI;
 import io.github.sashirestela.openai.domain.chat.ChatRequest;
+import io.github.sashirestela.openai.domain.chat.ChatRespFmt;
+import io.github.sashirestela.openai.domain.chat.ChatRespFmtType;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsg;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsgResponse;
 import io.github.sashirestela.openai.domain.chat.message.ChatMsgTool;
@@ -62,22 +65,34 @@ public class SimpleOpenAiClient implements LLMClient {
 
   @Override
   public String complete(CompletionRequest r) {
-    var functionExecutor = new FunctionExecutor();
-    this.functions.forEach(f -> functionExecutor.enrollFunction(
-        ChatFunction.builder()
-            .name(f.name())
-            .description(f.description())
-            .functionalClass(f.funcClass())
-            .build()));
-
     var messages = new ArrayList<ChatMsg>();
+    if (r.prompt() != null) {
+      messages.add(new ChatMsgUser(r.prompt()));
+    }
+
     messages.add(new ChatMsgUser(r.prompt()));
+
+    var functionExecutor = new FunctionExecutor();
+
+    if (!r.tools().isEmpty()) {
+      this.functions.forEach(f -> functionExecutor.enrollFunction(
+          ChatFunction.builder()
+              .name(f.name())
+              .description(f.description())
+              .functionalClass(f.funcClass())
+              .build()));
+    }
+
     var chatBuilder = ChatRequest.builder()
         .model(Optional.ofNullable(r.model()).orElse(this.model))
         .maxTokens(Optional.ofNullable(r.maxTokens()).orElse(500))
         .n(Optional.ofNullable(r.n()).orElse(1))
         .temperature(Optional.ofNullable(r.temperature()).orElse(0.9))
         .tools(functionExecutor.getToolFunctions());
+
+    if (r.responseFormat() == ResponseFormat.JSON) {
+      chatBuilder = chatBuilder.responseFormat(new ChatRespFmt(ChatRespFmtType.JSON));
+    }
 
     // Loop until all functions are executed
     ChatMsgResponse message = null;

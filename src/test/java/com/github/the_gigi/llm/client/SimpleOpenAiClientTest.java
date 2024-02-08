@@ -2,6 +2,7 @@ package com.github.the_gigi.llm.client;
 
 import static com.github.the_gigi.llm.common.Constants.DEFAULT_ANYSCALE_MODEL;
 import static com.github.the_gigi.llm.common.Constants.DEFAULT_OPENAI_MODEL;
+import static com.github.the_gigi.llm.common.JsonHelpers.isValidJson;
 import static com.github.the_gigi.llm.examples.functions.Functions.getSimpleOpenAiTools;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -11,6 +12,7 @@ import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
 import com.github.the_gigi.llm.client.LLMClientBuilder.LLMProvider;
 import com.github.the_gigi.llm.domain.CompletionRequest;
 import com.github.the_gigi.llm.domain.LLMClient;
+import com.github.the_gigi.llm.domain.ResponseFormat;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,17 +45,39 @@ class SimpleOpenAiClientTest {
   void completeWithJustPrompt() {
     var expected = "Once upon a time";
     var prompt = "complete the sentence: `" + expected + "`. Make sure to include the beginning phrase";
-    var result = this.openAiClient.complete(prompt);
-    assertNotNull(result);
-    assertFalse(result.isEmpty());
-    assertTrue(result.contains(expected));
+    var openAiResult = this.openAiClient.complete(prompt);
+    assertNotNull(openAiResult);
+    assertFalse(openAiResult.isEmpty());
+    assertTrue(openAiResult.contains(expected));
 
-    result = this.anyscaleClient.complete(prompt);
-    assertNotNull(result);
-    assertFalse(result.isEmpty());
-    assertTrue(result.contains(expected));
+    var anyscaleResult = this.anyscaleClient.complete(prompt);
+    assertNotNull(anyscaleResult);
+    assertFalse(anyscaleResult.isEmpty());
+    assertTrue(anyscaleResult.contains(expected));
   }
 
+  @Test
+  void completeWithJsonFormat() {
+    var expected = "Once upon a time";
+    var prompt = "complete the sentence: `" + expected + "`. Make sure to include the beginning phrase and return the result as JSON";
+
+    var r = CompletionRequest.builder()
+        .responseFormat(ResponseFormat.JSON)
+        .prompt(prompt)
+        .build();
+
+    var openAiResult = this.openAiClient.complete(r);
+    assertNotNull(openAiResult);
+    assertFalse(openAiResult.isEmpty());
+    assertTrue(openAiResult.contains(expected));
+    assertTrue(isValidJson(openAiResult));
+
+    var anyscaleResult = this.openAiClient.complete(r);
+    assertNotNull(anyscaleResult);
+    assertFalse(anyscaleResult.isEmpty());
+    assertTrue(anyscaleResult.contains(expected));
+    assertTrue(isValidJson(anyscaleResult));    
+  }
   @Test
   void completeWithTools() {
     var employees = List.of("John", "Jack", "Jill", "Jane");

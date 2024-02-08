@@ -3,7 +3,6 @@ package com.github.the_gigi.llm.client;
 import static com.theokanning.openai.service.OpenAiService.defaultClient;
 import static com.theokanning.openai.service.OpenAiService.defaultObjectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
 import com.github.the_gigi.llm.client.LLMClientBuilder.LLMProvider;
 import com.github.the_gigi.llm.domain.CompletionRequest;
