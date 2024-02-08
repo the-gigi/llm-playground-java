@@ -5,7 +5,9 @@ import static com.github.the_gigi.llm.common.Constants.DEFAULT_OPENAI_MODEL;
 import static com.github.the_gigi.llm.common.JsonHelpers.isValidJson;
 import static com.github.the_gigi.llm.examples.functions.Functions.getSimpleOpenAiTools;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.the_gigi.llm.client.LLMClientBuilder.LLMClientLibrary;
@@ -14,6 +16,8 @@ import com.github.the_gigi.llm.domain.CompletionRequest;
 import com.github.the_gigi.llm.domain.LLMClient;
 import com.github.the_gigi.llm.domain.ResponseFormat;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +60,14 @@ class SimpleOpenAiClientTest {
     assertTrue(anyscaleResult.contains(expected));
   }
 
+  private void assertCompletionException(LLMClient client, CompletionRequest r) {
+    try {
+      client.complete(r);
+      throw new AssertionError("Should have thrown an exception");
+    } catch (CompletionException e) {
+      assertTrue(e.getMessage().contains("must contain the word 'json' in some form, to use 'response_format' of type 'json_object'"));
+    }
+  }
   @Test
   void completeWithJsonFormat() {
     var expected = "Once upon a time";
@@ -76,8 +88,25 @@ class SimpleOpenAiClientTest {
     assertNotNull(anyscaleResult);
     assertFalse(anyscaleResult.isEmpty());
     assertTrue(anyscaleResult.contains(expected));
-    assertTrue(isValidJson(anyscaleResult));    
+    assertTrue(isValidJson(anyscaleResult));
+
+    // It should fail if the prompt doesn't JSON ¯\_(ツ)_/¯
+    var rr = CompletionRequest.builder()
+        .responseFormat(ResponseFormat.JSON)
+        .prompt("complete: once upon a time")
+        .build();
+
+    var errorMessage = "must contain the word 'json' in some form, to use 'response_format'";
+    List.of(this.openAiClient, this.anyscaleClient).forEach(client -> {
+      try {
+        client.complete(rr);
+        throw new AssertionError("Should have thrown an exception");
+      } catch (CompletionException e) {
+        assertTrue(e.getMessage().contains(errorMessage));
+      }
+    });
   }
+
   @Test
   void completeWithTools() {
     var employees = List.of("John", "Jack", "Jill", "Jane");
